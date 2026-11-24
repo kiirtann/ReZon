@@ -9,3 +9,6 @@ build/
 coverage/
 .DS_Store
 *.log
+.agents/
+AGENTS.md
+docs/

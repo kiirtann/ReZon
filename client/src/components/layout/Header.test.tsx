@@ -44,6 +44,8 @@ function renderHeader(options?: {
 describe('Header', () => {
   beforeEach(() => {
     useCartStore.setState({ items: [] });
+    document.documentElement.classList.remove('dark');
+    localStorage.removeItem('rezone-theme');
   });
 
   afterEach(() => {
@@ -135,5 +137,21 @@ describe('Header', () => {
     await waitFor(() => {
       expect(screen.getByTestId('location')).toHaveTextContent('/');
     });
+  });
+
+  it('toggles dark and light mode via the sun/moon icon switch near Cart', () => {
+    renderHeader({ user: null });
+
+    const themeBtn = screen.getByRole('button', { name: /switch to dark mode/i });
+    expect(themeBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(document.documentElement.classList.contains('dark')).toBe(false);
+
+    fireEvent.click(themeBtn);
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    expect(localStorage.getItem('rezone-theme')).toBe('dark');
+    expect(screen.getByRole('button', { name: /switch to light mode/i })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
   });
 });

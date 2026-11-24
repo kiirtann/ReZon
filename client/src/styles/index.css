@@ -45,6 +45,34 @@
   --shadow-card: 0 1px 3px rgb(0 0 0 / 0.08);
 }
 
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --color-bg: #0b1120;
+  --color-surface: #111827;
+  --color-surface-hover: #1e293b;
+  --color-text: #f8fafc;
+  --color-muted: #94a3b8;
+  --color-border: #1e293b;
+
+  --color-primary: #6366f1;
+  --color-primary-hover: #818cf8;
+
+  --color-success: #4ade80;
+  --color-success-bg: #052e16;
+  --color-warning: #fbbf24;
+  --color-warning-bg: #451a03;
+  --color-danger: #f87171;
+  --color-danger-bg: #450a0a;
+  --color-info: #60a5fa;
+  --color-info-bg: #172554;
+
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.35);
+}
+
 body {
-  @apply bg-bg font-sans text-text antialiased;
+  @apply bg-bg font-sans text-text antialiased transition-colors duration-150;
 }

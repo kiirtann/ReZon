@@ -8,9 +8,6 @@ export interface SkeletonProps {
  */
 export function Skeleton({ className = 'h-4 w-full' }: SkeletonProps) {
   return (
-    <div
-      aria-hidden="true"
-      className={`animate-pulse rounded-sm bg-border/70 ${className}`}
-    />
+    <div aria-hidden="true" className={`animate-pulse rounded-sm bg-border/70 ${className}`} />
   );
 }

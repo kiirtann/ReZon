@@ -11,13 +11,7 @@ export interface EmptyStateProps {
 /**
  * Consistent empty/zero-results state for product lists, cart, and order history.
  */
-export function EmptyState({
-  title,
-  description,
-  icon,
-  action,
-  className = '',
-}: EmptyStateProps) {
+export function EmptyState({ title, description, icon, action, className = '' }: EmptyStateProps) {
   return (
     <div
       className={`flex flex-col items-center justify-center rounded-md border border-dashed border-border bg-surface px-6 py-12 text-center ${className}`}

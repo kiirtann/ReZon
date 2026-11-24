@@ -43,7 +43,12 @@ export function Alert({
         <div>{children}</div>
       </div>
       {onRetry && (
-        <Button variant="secondary" size="sm" onClick={onRetry} className="shrink-0 self-start sm:self-center">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onRetry}
+          className="shrink-0 self-start sm:self-center"
+        >
           {retryLabel}
         </Button>
       )}

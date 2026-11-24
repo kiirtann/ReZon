@@ -111,7 +111,12 @@ export function StyleguidePage() {
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">Form Controls</h2>
         <Card className="grid gap-4 sm:grid-cols-2">
-          <FormField label="Email address" htmlFor="sg-email" required hint="We never share your email.">
+          <FormField
+            label="Email address"
+            htmlFor="sg-email"
+            required
+            hint="We never share your email."
+          >
             <Input id="sg-email" type="email" placeholder="you@example.com" />
           </FormField>
           <FormField

@@ -33,11 +33,7 @@ export function CardHeader({ className = '', children, ...rest }: HTMLAttributes
   );
 }
 
-export function CardContent({
-  className = '',
-  children,
-  ...rest
-}: HTMLAttributes<HTMLDivElement>) {
+export function CardContent({ className = '', children, ...rest }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={`pt-3 ${className}`} {...rest}>
       {children}

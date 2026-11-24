@@ -32,9 +32,32 @@
 | User-scoped queries (IDOR prevention) | Filtering `where: { userId: req.user!.id }` on the server rather than trusting a `?userId=` param from the client | P8 (T8.1) |
 | Deterministic tie-breaker sort | Sorting by `[{ createdAt: 'desc' }, { id: 'desc' }]` so pagination/lists stay stable when two rows share the same timestamp | P8 (T8.1) |
 | Exhaustive status mapping | Using `Record<OrderStatus, ...>` in TypeScript so every order status has a compile-time-checked badge label and color | P8 (T8.2) |
+| Rate limiting (`429 RATE_LIMITED`) | Capping repeated requests per IP on `/auth/login` and `/auth/register` with a `Retry-After` header to slow brute-force attacks | P9 (T9.2) |
+| Payload size limits | Capping `express.json({ limit: '100kb' })` and `express.raw({ limit: '1mb' })` to prevent memory-exhaustion DoS | P9 (T9.2) |
+| Route-based code splitting | Using `React.lazy` + `Suspense` so visitors on `/` don't download checkout/order pages or Zod schemas upfront | P9 (T9.3) |
 
 ---
 <!-- New task notes go below this line, newest first -->
+
+## Phase 9 Summary: Quality & Hardening (T9.1–T9.3)
+
+### What we built & why
+1. **Server Hardening (`server/src/middleware/rateLimit.ts`, `app.ts`, `auth.routes.ts`)**:
+   - Added a zero-dependency fixed-window rate limiter on `/auth/login` and `/auth/register` (`max: 20` per 15 min, `skipInTest: true`) returning `429 RATE_LIMITED` + `Retry-After`.
+   - Enforced `100kb` JSON and `1mb` webhook raw-body payload limits, and audited `helmet`, `cors`, `httpOnly`/`sameSite` cookie flags, and `pricing.ts` boundaries.
+2. **Client Performance & Accessibility (`router.tsx`, `ProductCard.tsx`, `CartLineItem.tsx`, pages)**:
+   - Lazy-loaded 12 secondary routes with `React.lazy` + `Suspense`, shrinking the initial JS bundle by ~36.6% (`488.56 kB` → `309.65 kB`, `98.83 kB` gzip).
+   - Added `loading="lazy"` / `decoding="async"` on images and `focus-visible` outlines on interactive links/buttons.
+3. **Test Coverage Pass**:
+   - Added `rateLimit.test.ts`, `pricing.test.ts`, `Header.test.tsx`, and `CartPage.test.tsx` (now **115 tests** total across server and client).
+
+### Self-check questions
+1. Why do we mount `express.json({ limit: '100kb' })` *after* `express.raw({ type: 'application/json', limit: '1mb' })` on `/api/v1/webhooks`?
+2. Why did we keep `HomePage` eagerly imported instead of wrapping it in `React.lazy`?
+3. What trade-off does an in-memory `Map` rate limiter have when scaling to multiple server instances?
+
+### Optional hands-on exercise
+- Run `npm run build` and inspect `dist/assets/` to see how Vite split each page into its own small `.js` chunk.
 
 ## Phase 8 Summary: Order History (T8.1–T8.2)
 

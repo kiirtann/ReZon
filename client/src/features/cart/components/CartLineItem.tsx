@@ -35,6 +35,8 @@ export function CartLineItem({
             <img
               src={product.imageUrl}
               alt={product.name}
+              loading="lazy"
+              decoding="async"
               className="h-20 w-20 object-cover sm:h-24 sm:w-24"
             />
           </Link>

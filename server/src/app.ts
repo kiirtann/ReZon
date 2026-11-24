@@ -28,10 +28,14 @@ export function createApp() {
 
   // Stripe webhooks require the unparsed raw body to verify the Stripe-Signature header.
   // Must be mounted BEFORE express.json().
-  app.use('/api/v1/webhooks', express.raw({ type: 'application/json' }), paymentsRouter);
+  app.use(
+    '/api/v1/webhooks',
+    express.raw({ type: 'application/json', limit: '1mb' }),
+    paymentsRouter,
+  );
 
-  // Parse JSON request bodies into req.body.
-  app.use(express.json());
+  // Parse JSON request bodies into req.body with an explicit size cap to prevent payload DoS.
+  app.use(express.json({ limit: '100kb' }));
   app.use(requestLogger);
 
   // All API routes live under /api/v1 (versioned, see docs/04-API_CONTRACT.md).

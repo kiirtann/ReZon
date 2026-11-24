@@ -125,7 +125,7 @@ export function ProductListPage() {
                   type="button"
                   onClick={() => updateParams({ search: undefined })}
                   aria-label="Clear search"
-                  className="ml-0.5 rounded-full px-1 hover:bg-white/20"
+                  className="ml-0.5 rounded-full px-1 hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   ×
                 </button>

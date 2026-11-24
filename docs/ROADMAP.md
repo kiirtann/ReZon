@@ -36,7 +36,7 @@ built against the API contract with mocked data before the backend is done.
 | P6 | Cart store, cart page, cart validation API | Client state, persistence, server-side validation | done |
 | P7 | Orders API, Stripe Checkout, webhook, checkout UI | Transactions, payment flows, webhooks, idempotency | done |
 | P8 | Order history list and detail | Authorization (owning a resource), data display | done |
-| P9 | Tests, security pass, accessibility, performance | Testing pyramid, OWASP basics, Lighthouse | todo |
+| P9 | Tests, security pass, accessibility, performance | Testing pyramid, OWASP basics, Lighthouse | done |
 | P10 | Move to PostgreSQL, deploy | Production DB, env management, hosting | todo |
 
 ---
@@ -148,9 +148,9 @@ built against the API contract with mocked data before the backend is done.
 - Done when: list with status badges and a detail page with items, address and totals.
 
 ## P9. Quality and hardening
-**T9.1 Test coverage pass** · `todo` · Depends on: P8 · Owns: `**/*.test.ts(x)`
-**T9.2 Security review** (rate-limit auth, helmet, CORS, cookie flags, input limits) · `todo` · Depends on: P8
-**T9.3 Accessibility and performance** (keyboard, labels, Lighthouse ≥ 90, image lazy-load) · `todo` · Depends on: P8
+**T9.1 Test coverage pass** · `done` · Depends on: P8 · Owns: `**/*.test.ts(x)`
+**T9.2 Security review** (rate-limit auth, helmet, CORS, cookie flags, input limits) · `done` · Depends on: P8
+**T9.3 Accessibility and performance** (keyboard, labels, Lighthouse ≥ 90, image lazy-load) · `done` · Depends on: P8
 
 ## P10. Production
 **T10.1 Switch to PostgreSQL** (Neon or Supabase free tier) · `todo` · Depends on: P9

@@ -101,17 +101,23 @@ export function ProductDetailPage() {
         aria-label="Breadcrumb"
         className="mb-6 flex flex-wrap items-center gap-2 text-sm text-muted"
       >
-        <Link to="/" className="hover:text-text">
+        <Link
+          to="/"
+          className="rounded-sm hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        >
           Home
         </Link>
         <span aria-hidden="true">/</span>
-        <Link to="/products" className="hover:text-text">
+        <Link
+          to="/products"
+          className="rounded-sm hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        >
           Products
         </Link>
         <span aria-hidden="true">/</span>
         <Link
           to={`/products?category=${encodeURIComponent(product.category.slug)}`}
-          className="hover:text-text"
+          className="rounded-sm hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
           {product.category.name}
         </Link>
@@ -126,13 +132,17 @@ export function ProductDetailPage() {
           <img
             src={product.imageUrl}
             alt={product.name}
+            decoding="async"
             className="aspect-square w-full object-cover"
           />
         </div>
 
         <div className="flex flex-col justify-start space-y-5">
           <div>
-            <Link to={`/products?category=${encodeURIComponent(product.category.slug)}`}>
+            <Link
+              to={`/products?category=${encodeURIComponent(product.category.slug)}`}
+              className="inline-block rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
               <Badge variant="neutral" size="md">
                 {product.category.name}
               </Badge>

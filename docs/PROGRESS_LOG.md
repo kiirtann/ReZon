@@ -9,6 +9,18 @@
 > - Notes / follow-ups: <anything the next task should know>
 > ```
 
+## 2026-11-24 · P9 Quality & hardening (T9.1–T9.3) · Antigravity (parallel)
+- Changed:
+  - **T9.2 (Server security)**: added `createRateLimiter` (`server/src/middleware/rateLimit.ts`) on `/api/v1/auth/login` and `/api/v1/auth/register` (`429 RATE_LIMITED`), added body payload limits in `server/src/app.ts` (`100kb` JSON, `1mb` webhook raw), and audited helmet, CORS, cookie flags, and Zod/pricing guards.
+  - **T9.3 (Client a11y & perf)**: lazy-loaded 12 secondary routes in `client/src/app/router.tsx` (`React.lazy` + `Suspense`, main JS chunk dropped from `488.56 kB` to `309.65 kB` / `98.83 kB` gzip), added `loading="lazy"` / `decoding="async"` on catalog & cart images, and added `focus-visible` outlines in `HomePage`, `ProductDetailPage`, and `ProductListPage`.
+  - **T9.1 (Tests)**: added `rateLimit.test.ts`, `pricing.test.ts`, `Header.test.tsx`, and `CartPage.test.tsx`.
+- Verified:
+  - `npm run typecheck` (0 errors)
+  - `npm test` (server: 10 files, 54 tests passed; client: 17 files, 61 tests passed)
+  - `npm run lint` (0 errors, 0 warnings) & `npm run format:check` (passed)
+  - `npm run build` (passed)
+- Notes / follow-ups: P9 is complete! Only **P10 (Switch to PostgreSQL & deploy)** remains.
+
 ## 2026-11-24 · P8 Order history (T8.1–T8.2) · Antigravity (parallel)
 - Changed:
   - **T8.1 (Orders read API)**: added `listOrdersByUser` (`GET /api/v1/orders`, scoped to `req.user.id`, sorted newest first) in `server/src/modules/orders/*` + Supertest specs.

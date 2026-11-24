@@ -49,7 +49,7 @@ export function HomePage() {
           </h2>
           <Link
             to="/products"
-            className="text-sm font-medium text-primary hover:text-primary-hover"
+            className="rounded-sm text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             All products →
           </Link>
@@ -95,7 +95,7 @@ export function HomePage() {
           </h2>
           <Link
             to="/products"
-            className="text-sm font-medium text-primary hover:text-primary-hover"
+            className="rounded-sm text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             View all →
           </Link>

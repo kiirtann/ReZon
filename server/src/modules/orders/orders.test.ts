@@ -235,6 +235,74 @@ describe('Orders API', () => {
     });
   });
 
+  describe('GET /api/v1/orders', () => {
+    it('returns 401 when unauthenticated', async () => {
+      const res = await request(createApp()).get('/api/v1/orders');
+
+      expect(res.status).toBe(401);
+      expect(res.body.error.code).toBe('UNAUTHENTICATED');
+    });
+
+    it('returns only the current user orders, newest first, without leaking other users orders', async () => {
+      const app = createApp();
+
+      const firstOwnerRes = await request(app)
+        .post('/api/v1/orders')
+        .set('Cookie', fixtures.ownerCookie)
+        .send({
+          items: [{ productId: fixtures.cableId, quantity: 1 }],
+          shippingAddress: validShippingAddress,
+        });
+      expect(firstOwnerRes.status).toBe(201);
+      const firstOrderId = firstOwnerRes.body.data.order.id as string;
+
+      const otherUserRes = await request(app)
+        .post('/api/v1/orders')
+        .set('Cookie', fixtures.otherCookie)
+        .send({
+          items: [{ productId: fixtures.lowStockId, quantity: 1 }],
+          shippingAddress: validShippingAddress,
+        });
+      expect(otherUserRes.status).toBe(201);
+      const otherOrderId = otherUserRes.body.data.order.id as string;
+
+      // Ensure a distinct createdAt timestamp so newest-first ordering is deterministic
+      await prisma.order.update({
+        where: { id: firstOrderId },
+        data: { createdAt: new Date(Date.now() - 10_000) },
+      });
+
+      const secondOwnerRes = await request(app)
+        .post('/api/v1/orders')
+        .set('Cookie', fixtures.ownerCookie)
+        .send({
+          items: [{ productId: fixtures.headphonesId, quantity: 1 }],
+          shippingAddress: validShippingAddress,
+        });
+      expect(secondOwnerRes.status).toBe(201);
+      const secondOrderId = secondOwnerRes.body.data.order.id as string;
+
+      const ownerListRes = await request(app)
+        .get('/api/v1/orders')
+        .set('Cookie', fixtures.ownerCookie);
+      expect(ownerListRes.status).toBe(200);
+      expect(ownerListRes.body.data).toHaveLength(2);
+      expect(ownerListRes.body.data.map((o: { id: string }) => o.id)).toEqual([
+        secondOrderId,
+        firstOrderId,
+      ]);
+      expect(ownerListRes.body.data[0].items[0].productName).toBe('Wireless Headphones');
+      expect(ownerListRes.body.data[1].items[0].productName).toBe('USB-C Cable');
+
+      const otherListRes = await request(app)
+        .get('/api/v1/orders')
+        .set('Cookie', fixtures.otherCookie);
+      expect(otherListRes.status).toBe(200);
+      expect(otherListRes.body.data).toHaveLength(1);
+      expect(otherListRes.body.data[0].id).toBe(otherOrderId);
+    });
+  });
+
   describe('GET /api/v1/orders/:id', () => {
     it('returns 200 for owner, 403 for non-owner, and 404 for missing order', async () => {
       const createRes = await request(createApp())

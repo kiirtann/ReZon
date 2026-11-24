@@ -9,6 +9,17 @@
 > - Notes / follow-ups: <anything the next task should know>
 > ```
 
+## 2026-11-24 · P8 Order history (T8.1–T8.2) · Antigravity (parallel)
+- Changed:
+  - **T8.1 (Orders read API)**: added `listOrdersByUser` (`GET /api/v1/orders`, scoped to `req.user.id`, sorted newest first) in `server/src/modules/orders/*` + Supertest specs.
+  - **T8.2 (Order history UI)**: created `client/src/features/orders/{api.ts,components/OrderStatusBadge.tsx,components/OrderCard.tsx}` and `client/src/pages/{OrderHistoryPage,OrderHistoryPage.test,OrderDetailPage}.tsx`; wired `/orders` and `/orders/:id` in `client/src/app/router.tsx` (and removed `PlaceholderPage`).
+- Verified:
+  - `npm run typecheck` (0 errors)
+  - `npm test` (server: 8 files, 43 tests passed; client: 15 files, 54 tests passed)
+  - `npm run lint` (0 errors, 0 warnings) & `npm run format:check` (passed)
+  - `npm run build` (passed)
+- Notes / follow-ups: P8 is complete! Next up: **P9 (Quality and hardening: T9.1, T9.2, T9.3)**.
+
 ## 2026-11-24 · P7 Checkout & payments (T7.1–T7.3) · Antigravity (parallel)
 - Changed:
   - **T7.1 & T7.2 (Backend)**: added `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` to `server/src/config/env.ts` and `server/.env`; created `server/src/lib/stripe.ts`, `server/src/modules/orders/*` (`POST /api/v1/orders`, `GET /api/v1/orders/:id`), and `server/src/modules/payments/*` (`POST /api/v1/webhooks/stripe`); mounted raw-body webhook before `express.json()` in `server/src/app.ts`.

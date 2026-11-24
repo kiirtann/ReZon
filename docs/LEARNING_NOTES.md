@@ -29,9 +29,29 @@
 | Price snapshots (`OrderItem`) | Copying `productName` and `unitPriceCents` onto `OrderItem` at checkout so past orders never change when catalog prices change | P7 (T7.1) |
 | Raw-body webhook verification | Mounting `POST /webhooks/stripe` with `express.raw()` before `express.json()` so Stripe's HMAC signature matches exact raw bytes | P7 (T7.2) |
 | Webhook idempotency | Checking `if (order.status === 'PAID') return;` inside `prisma.$transaction` so duplicate webhook deliveries don't double-decrement stock | P7 (T7.2) |
+| User-scoped queries (IDOR prevention) | Filtering `where: { userId: req.user!.id }` on the server rather than trusting a `?userId=` param from the client | P8 (T8.1) |
+| Deterministic tie-breaker sort | Sorting by `[{ createdAt: 'desc' }, { id: 'desc' }]` so pagination/lists stay stable when two rows share the same timestamp | P8 (T8.1) |
+| Exhaustive status mapping | Using `Record<OrderStatus, ...>` in TypeScript so every order status has a compile-time-checked badge label and color | P8 (T8.2) |
 
 ---
 <!-- New task notes go below this line, newest first -->
+
+## Phase 8 Summary: Order History (T8.1–T8.2)
+
+### What we built & why
+1. **Orders Read API (`server/src/modules/orders/`)**:
+   - `GET /api/v1/orders` queries orders scoped strictly to `req.user!.id`, sorted newest-first (`createdAt desc, id desc`), preventing cross-user data leaks (IDOR).
+2. **Order History & Detail UI (`client/src/features/orders/`, `OrderHistoryPage.tsx`, `OrderDetailPage.tsx`)**:
+   - `OrderHistoryPage` renders skeleton loading, empty state, error/retry, and `OrderCard`s with `OrderStatusBadge`.
+   - `OrderDetailPage` shows line items (with historical `unitPriceCents` snapshots), shipping address, and totals, and disables Retry on permanent `403`/`404` responses.
+
+### Self-check questions
+1. Why do we pass `req.user!.id` from the auth middleware instead of accepting `?userId=...` in the query string?
+2. Why does `OrderDetailPage` disable the Retry button on `403` and `404` responses?
+3. Why is `[{ createdAt: 'desc' }, { id: 'desc' }]` safer than `[{ createdAt: 'desc' }]` alone?
+
+### Optional hands-on exercise
+- Sign in as `demo@shoplearn.dev` (`Password123!`), visit `/orders`, and try navigating manually to `/orders/nonexistent-id` to see the 404 error state.
 
 ## Phase 7 Summary: Checkout & Payments (T7.1–T7.3)
 

@@ -232,3 +232,16 @@ export async function getOrderById(userId: string, orderId: string): Promise<Ord
 
   return toOrderDto(order);
 }
+
+/**
+ * Lists all orders belonging to a user, ordered newest first.
+ */
+export async function listOrdersByUser(userId: string): Promise<OrderDto[]> {
+  const orders = await prisma.order.findMany({
+    where: { userId },
+    include: { items: true },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+  });
+
+  return orders.map(toOrderDto);
+}

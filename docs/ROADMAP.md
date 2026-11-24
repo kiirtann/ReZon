@@ -35,7 +35,7 @@ built against the API contract with mocked data before the backend is done.
 | P5 | Layout, routing, home, product list and detail pages | React Router, TanStack Query, URL state, component design | done |
 | P6 | Cart store, cart page, cart validation API | Client state, persistence, server-side validation | done |
 | P7 | Orders API, Stripe Checkout, webhook, checkout UI | Transactions, payment flows, webhooks, idempotency | done |
-| P8 | Order history list and detail | Authorization (owning a resource), data display | todo |
+| P8 | Order history list and detail | Authorization (owning a resource), data display | done |
 | P9 | Tests, security pass, accessibility, performance | Testing pyramid, OWASP basics, Lighthouse | todo |
 | P10 | Move to PostgreSQL, deploy | Production DB, env management, hosting | todo |
 
@@ -141,10 +141,10 @@ built against the API contract with mocked data before the backend is done.
 - Done when: address form, order summary, redirect to Stripe; success page polls until PAID and clears the cart; cancel page.
 
 ## P8. Order history
-**T8.1 Orders read API** · `todo` · Depends on: T7.1 · Owns: `server/src/modules/orders/**` (read routes)
+**T8.1 Orders read API** · `done` · Depends on: T7.1 · Owns: `server/src/modules/orders/**` (read routes)
 - Done when: list and detail work; a non-owner gets 403; tested.
 
-**T8.2 Order history UI** · `todo` · Depends on: T8.1, T7.3 · Owns: `client/src/features/orders/**`, `client/src/pages/Order*.tsx`
+**T8.2 Order history UI** · `done` · Depends on: T8.1, T7.3 · Owns: `client/src/features/orders/**`, `client/src/pages/Order*.tsx`
 - Done when: list with status badges and a detail page with items, address and totals.
 
 ## P9. Quality and hardening

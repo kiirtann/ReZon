@@ -2,7 +2,12 @@ import type { CookieOptions, Request, Response } from 'express';
 import { env } from '../../config/env.js';
 import { unauthorizedError } from '../../lib/errors.js';
 import { signToken } from '../../lib/jwt.js';
-import type { LoginInput, RegisterInput } from './auth.schema.js';
+import type {
+  ChangePasswordInput,
+  LoginInput,
+  RegisterInput,
+  UpdateProfileInput,
+} from './auth.schema.js';
 import * as authService from './auth.service.js';
 
 const AUTH_COOKIE_NAME = 'token';
@@ -49,4 +54,26 @@ export async function me(req: Request, res: Response): Promise<void> {
 
   const user = await authService.getMe(req.user.id);
   res.status(200).json({ data: user });
+}
+
+export async function updateProfile(req: Request, res: Response): Promise<void> {
+  if (!req.user) {
+    throw unauthorizedError();
+  }
+
+  const input = req.validated?.body as UpdateProfileInput;
+  const user = await authService.updateProfile(req.user.id, input);
+  // Re-issue cookie so the email claim inside the JWT stays fresh.
+  setAuthCookie(res, user);
+  res.status(200).json({ data: user });
+}
+
+export async function changePassword(req: Request, res: Response): Promise<void> {
+  if (!req.user) {
+    throw unauthorizedError();
+  }
+
+  const input = req.validated?.body as ChangePasswordInput;
+  await authService.changePassword(req.user.id, input);
+  res.status(204).send();
 }

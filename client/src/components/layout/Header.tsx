@@ -1,14 +1,9 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLogout, useMe } from '../../features/auth/api';
 import { selectCartCount, useCartStore } from '../../features/cart/store';
 import { Badge, Button, Input } from '../ui';
 import { Container } from './Container';
-
-const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  `text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-sm px-1 py-0.5 ${
-    isActive ? 'text-primary' : 'text-muted hover:text-text'
-  }`;
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -18,7 +13,7 @@ function getInitials(name: string): string {
 }
 
 /**
- * Global site header with ReZone logo, catalog navigation, product search,
+ * Global site header with ReZone logo, product search,
  * cart icon badge, and borderless profile dropdown.
  */
 export function Header() {
@@ -76,20 +71,12 @@ export function Header() {
     <header className="sticky top-0 z-30 border-b border-border bg-bg/95 backdrop-blur">
       <Container>
         <div className="flex flex-wrap items-center justify-between gap-3 py-3 md:flex-nowrap md:gap-6">
-          <div className="flex items-center gap-4">
-            <Link
-              to="/"
-              className="rounded-sm text-xl font-bold tracking-tight text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              Re<span className="text-primary">Zone</span>
-            </Link>
-
-            <nav aria-label="Primary" className="flex items-center gap-4">
-              <NavLink to="/products" className={navLinkClass}>
-                Products
-              </NavLink>
-            </nav>
-          </div>
+          <Link
+            to="/"
+            className="rounded-sm text-xl font-bold tracking-tight text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            Re<span className="text-primary">Zone</span>
+          </Link>
 
           <form
             role="search"
@@ -180,6 +167,14 @@ export function Header() {
                         </div>
                       </div>
                       <Link
+                        to="/profile"
+                        role="menuitem"
+                        onClick={() => setProfileOpen(false)}
+                        className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
+                      >
+                        My Profile
+                      </Link>
+                      <Link
                         to="/orders"
                         role="menuitem"
                         onClick={() => setProfileOpen(false)}
@@ -194,14 +189,6 @@ export function Header() {
                         className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
                       >
                         Checkout
-                      </Link>
-                      <Link
-                        to="/cart"
-                        role="menuitem"
-                        onClick={() => setProfileOpen(false)}
-                        className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
-                      >
-                        My Cart ({cartItemCount})
                       </Link>
                       <div className="border-t border-border pt-1">
                         <button
@@ -244,14 +231,6 @@ export function Header() {
                         className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
                       >
                         Create account
-                      </Link>
-                      <Link
-                        to="/cart"
-                        role="menuitem"
-                        onClick={() => setProfileOpen(false)}
-                        className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
-                      >
-                        My Cart ({cartItemCount})
                       </Link>
                     </div>
                   )}

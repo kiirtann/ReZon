@@ -32,6 +32,9 @@ const OrderHistoryPage = lazy(() =>
 const OrderDetailPage = lazy(() =>
   import('../pages/OrderDetailPage').then((m) => ({ default: m.OrderDetailPage })),
 );
+const ProfilePage = lazy(() =>
+  import('../pages/ProfilePage').then((m) => ({ default: m.ProfilePage })),
+);
 const StyleguidePage = lazy(() =>
   import('../pages/StyleguidePage').then((m) => ({ default: m.StyleguidePage })),
 );
@@ -78,6 +81,7 @@ export const routes: RouteObject[] = [
           { path: '/checkout/cancel', element: withSuspense(<CheckoutCancelPage />) },
           { path: '/orders', element: withSuspense(<OrderHistoryPage />) },
           { path: '/orders/:id', element: withSuspense(<OrderDetailPage />) },
+          { path: '/profile', element: withSuspense(<ProfilePage />) },
         ],
       },
       { path: '/styleguide', element: withSuspense(<StyleguidePage />) },

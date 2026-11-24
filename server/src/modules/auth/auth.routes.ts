@@ -2,8 +2,13 @@ import { Router } from 'express';
 import { createRateLimiter } from '../../middleware/rateLimit.js';
 import { requireAuth } from '../../middleware/requireAuth.js';
 import { validate } from '../../middleware/validate.js';
-import { login, logout, me, register } from './auth.controller.js';
-import { loginSchema, registerSchema } from './auth.schema.js';
+import { changePassword, login, logout, me, register, updateProfile } from './auth.controller.js';
+import {
+  changePasswordSchema,
+  loginSchema,
+  registerSchema,
+  updateProfileSchema,
+} from './auth.schema.js';
 
 export const authRouter = Router();
 
@@ -18,3 +23,10 @@ authRouter.post('/register', authRateLimiter, validate({ body: registerSchema })
 authRouter.post('/login', authRateLimiter, validate({ body: loginSchema }), login);
 authRouter.post('/logout', logout);
 authRouter.get('/me', requireAuth, me);
+authRouter.patch('/me', requireAuth, validate({ body: updateProfileSchema }), updateProfile);
+authRouter.patch(
+  '/password',
+  requireAuth,
+  validate({ body: changePasswordSchema }),
+  changePassword,
+);

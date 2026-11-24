@@ -1,7 +1,12 @@
 import { conflictError, unauthorizedError } from '../../lib/errors.js';
 import { hashPassword, verifyPassword } from '../../lib/password.js';
 import { prisma } from '../../lib/prisma.js';
-import type { LoginInput, RegisterInput } from './auth.schema.js';
+import type {
+  ChangePasswordInput,
+  LoginInput,
+  RegisterInput,
+  UpdateProfileInput,
+} from './auth.schema.js';
 
 export interface PublicUser {
   id: string;
@@ -76,4 +81,49 @@ export async function getMe(userId: string): Promise<PublicUser> {
   }
 
   return user;
+}
+
+export async function updateProfile(
+  userId: string,
+  input: UpdateProfileInput,
+): Promise<PublicUser> {
+  const existingWithEmail = await prisma.user.findUnique({
+    where: { email: input.email },
+    select: { id: true },
+  });
+
+  if (existingWithEmail && existingWithEmail.id !== userId) {
+    throw conflictError('Email is already registered');
+  }
+
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      name: input.name,
+      email: input.email,
+    },
+    select: publicUserSelect,
+  });
+}
+
+export async function changePassword(userId: string, input: ChangePasswordInput): Promise<void> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, passwordHash: true },
+  });
+
+  if (!user) {
+    throw unauthorizedError();
+  }
+
+  const isValid = await verifyPassword(input.currentPassword, user.passwordHash);
+  if (!isValid) {
+    throw unauthorizedError('Current password is incorrect');
+  }
+
+  const passwordHash = await hashPassword(input.newPassword);
+  await prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash },
+  });
 }

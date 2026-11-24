@@ -195,4 +195,84 @@ describe('Auth API (/api/v1/auth)', () => {
       expect(meRes.status).toBe(401);
     });
   });
+
+  describe('PATCH /api/v1/auth/me', () => {
+    it('updates name and email for the signed-in user', async () => {
+      const app = createApp();
+      const agent = request.agent(app);
+
+      await agent.post('/api/v1/auth/register').send({
+        name: 'Alice',
+        email: 'alice@example.com',
+        password: 'password123',
+      });
+
+      const res = await agent.patch('/api/v1/auth/me').send({
+        name: 'Alice Updated',
+        email: 'ALICE.NEW@example.com',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data).toEqual({
+        id: expect.any(String),
+        name: 'Alice Updated',
+        email: 'alice.new@example.com',
+      });
+    });
+
+    it('returns 409 CONFLICT when changing email to one already taken', async () => {
+      const app = createApp();
+      await request(app).post('/api/v1/auth/register').send({
+        name: 'Bob',
+        email: 'bob@example.com',
+        password: 'password123',
+      });
+
+      const agent = request.agent(app);
+      await agent.post('/api/v1/auth/register').send({
+        name: 'Alice',
+        email: 'alice@example.com',
+        password: 'password123',
+      });
+
+      const res = await agent.patch('/api/v1/auth/me').send({
+        name: 'Alice',
+        email: 'bob@example.com',
+      });
+
+      expect(res.status).toBe(409);
+      expect(res.body.error.code).toBe('CONFLICT');
+    });
+  });
+
+  describe('PATCH /api/v1/auth/password', () => {
+    it('changes password when currentPassword matches and rejects wrong currentPassword', async () => {
+      const app = createApp();
+      const agent = request.agent(app);
+
+      await agent.post('/api/v1/auth/register').send({
+        name: 'Alice',
+        email: 'alice@example.com',
+        password: 'password123',
+      });
+
+      const wrongRes = await agent.patch('/api/v1/auth/password').send({
+        currentPassword: 'wrong-password',
+        newPassword: 'newpassword123',
+      });
+      expect(wrongRes.status).toBe(401);
+
+      const okRes = await agent.patch('/api/v1/auth/password').send({
+        currentPassword: 'password123',
+        newPassword: 'newpassword123',
+      });
+      expect(okRes.status).toBe(204);
+
+      const loginNew = await request(app).post('/api/v1/auth/login').send({
+        email: 'alice@example.com',
+        password: 'newpassword123',
+      });
+      expect(loginNew.status).toBe(200);
+    });
+  });
 });

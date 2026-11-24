@@ -116,11 +116,16 @@ describe('Header', () => {
     fireEvent.click(profileBtn);
     expect(screen.getByText('Ada Lovelace')).toBeInTheDocument();
     expect(screen.getByText('ada@example.com')).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /my profile/i })).toHaveAttribute(
+      'href',
+      '/profile',
+    );
     expect(screen.getByRole('menuitem', { name: /my orders/i })).toHaveAttribute('href', '/orders');
     expect(screen.getByRole('menuitem', { name: /checkout/i })).toHaveAttribute(
       'href',
       '/checkout',
     );
+    expect(screen.queryByRole('menuitem', { name: /my cart/i })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('menuitem', { name: /sign out/i }));
 

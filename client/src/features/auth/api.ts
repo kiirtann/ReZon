@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ApiError, apiClient, type ApiResponse } from '../../lib/apiClient';
-import type { LoginInput, RegisterInput, User } from './types';
+import type {
+  ChangePasswordInput,
+  LoginInput,
+  RegisterInput,
+  UpdateProfileInput,
+  User,
+} from './types';
 
 export const authKeys = {
   me: ['auth', 'me'] as const,
@@ -67,6 +73,28 @@ export function useLogout() {
     onSuccess: () => {
       queryClient.setQueryData(authKeys.me, null);
       void queryClient.invalidateQueries({ queryKey: authKeys.me });
+    },
+  });
+}
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: UpdateProfileInput) => {
+      const response = await apiClient.patch<ApiResponse<User>>('/auth/me', input);
+      return response.data;
+    },
+    onSuccess: (user) => {
+      queryClient.setQueryData(authKeys.me, user);
+    },
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: async (input: ChangePasswordInput) => {
+      await apiClient.patch<void>('/auth/password', input);
     },
   });
 }

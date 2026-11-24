@@ -9,6 +9,18 @@
 > - Notes / follow-ups: <anything the next task should know>
 > ```
 
+## 2026-11-24 · P1 UI Design (T1.1–T1.4) + P2 Database (T2.1–T2.3) · Antigravity (parallel)
+- Changed:
+  - **P1 (UI Design)**: finalized `docs/05-UI_DESIGN.md` (sitemap, flows, WCAG AA-checked tokens, component inventory), created `docs/design/wireframes.md`, updated `client/src/styles/index.css`, built 14 accessible UI primitives in `client/src/components/ui/*` + unit tests, and added `client/src/pages/StyleguidePage.tsx` at `/styleguide`.
+  - **P2 (Database)**: installed `prisma@^6`, `@prisma/client@^6`, `bcrypt` in `server/`; added `DATABASE_URL` to `server/.env*` and `server/src/config/env.ts`; created `server/src/lib/prisma.ts` singleton, `server/prisma/schema.prisma`, initial migration (`20261124073151_init`), and idempotent `server/prisma/seed.ts` (4 categories, 24 products, 1 demo user).
+- Verified:
+  - `npm run typecheck` (0 errors across client and server)
+  - `npm test` (server: 1 passed; client: 5 files, 12 tests passed)
+  - `npm run lint` & `npm run format:check` (passed)
+  - `npm run build` (passed)
+  - `npm run db:seed` run multiple times (idempotent: 4 categories, 24 products, 1 user)
+- Notes / follow-ups: P1 and P2 are ready for user review. Next up after approval: **P3 (Backend core and catalog API)**, which can also run alongside **T5.1 (App shell and routing)** if desired.
+
 ## 2026-11-24 · P0 Foundations (T0.1–T0.4) · Antigravity
 - Changed:
   - Root monorepo (`package.json`, `tsconfig.base.json`, `eslint.config.js`, `.prettierrc`, `.prettierignore`, `.editorconfig`)

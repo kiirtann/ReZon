@@ -28,8 +28,8 @@ built against the API contract with mocked data before the backend is done.
 | Phase | Goal | You will learn | Status |
 |---|---|---|---|
 | P0 | Monorepo, tooling, both apps start | npm workspaces, Vite, TS config, ESLint/Prettier | done |
-| P1 | Finished UI design: flows, tokens, wireframes, components | UX basics, design systems, accessibility | todo |
-| P2 | Prisma schema, migration, seed | Relational modeling, migrations, ORMs | todo |
+| P1 | Finished UI design: flows, tokens, wireframes, components | UX basics, design systems, accessibility | done |
+| P2 | Prisma schema, migration, seed | Relational modeling, migrations, ORMs | done |
 | P3 | Express skeleton, error handling, products and categories API | REST, middleware, validation, pagination, filtering | todo |
 | P4 | Register, login, logout, me, protected routes (API + UI) | Hashing, JWT, cookies, CORS, auth context | todo |
 | P5 | Layout, routing, home, product list and detail pages | React Router, TanStack Query, URL state, component design | todo |
@@ -60,30 +60,30 @@ built against the API contract with mocked data before the backend is done.
 > T0.2 and T0.3 can run **in parallel**.
 
 ## P1. UI Design (parallel with P2–P3)
-**T1.1 User flows and sitemap** · `todo` · Depends on: T0.1 · Owns: `docs/05-UI_DESIGN.md` (Sitemap, Flow sections)
+**T1.1 User flows and sitemap** · `done` · Depends on: T0.1 · Owns: `docs/05-UI_DESIGN.md` (Sitemap, Flow sections)
 - Done when: every route is confirmed, the flows cover guest checkout redirect, errors and empty states.
 
-**T1.2 Design system tokens** · `todo` · Depends on: T1.1 · Owns: `docs/05-UI_DESIGN.md` (Tokens), `client/src/styles/index.css`
+**T1.2 Design system tokens** · `done` · Depends on: T1.1 · Owns: `docs/05-UI_DESIGN.md` (Tokens), `client/src/styles/index.css`
 - Done when: tokens are final, contrast is checked, the Tailwind theme is mapped, and a small `/styleguide` dev route shows them.
 
-**T1.3 Wireframes for every page** · `todo` · Depends on: T1.1 · Owns: `docs/05-UI_DESIGN.md` (Wireframes), `docs/design/**`
+**T1.3 Wireframes for every page** · `done` · Depends on: T1.1 · Owns: `docs/05-UI_DESIGN.md` (Wireframes), `docs/design/**`
 - Done when: low-fi wireframes exist for each route at mobile and desktop sizes, with loading, empty and error states noted.
 
-**T1.4 Component inventory and UI primitives** · `todo` · Depends on: T1.2, T0.3 · Owns: `client/src/components/ui/**`, `docs/05-UI_DESIGN.md` (Components)
+**T1.4 Component inventory and UI primitives** · `done` · Depends on: T1.2, T0.3 · Owns: `client/src/components/ui/**`, `docs/05-UI_DESIGN.md` (Components)
 - Done when: Button, Input, FormField, Card, Badge, Skeleton, Alert, Price, QuantityStepper, Pagination and EmptyState are built and shown on `/styleguide`.
 
 > T1.2 and T1.3 can run **in parallel**.
 
 ## P2. Database
-**T2.1 Prisma setup** · `todo` · Depends on: T0.2 · Owns: `server/prisma/**`, `server/src/lib/prisma.ts`
+**T2.1 Prisma setup** · `done` · Depends on: T0.2 · Owns: `server/prisma/**`, `server/src/lib/prisma.ts`
 - Read: 03-DATA_MODEL
 - Done when: Prisma is installed, SQLite `DATABASE_URL` is set, the Prisma client singleton is in `lib/prisma.ts`.
 
-**T2.2 Schema and first migration** · `todo` · Depends on: T2.1 · Owns: `server/prisma/schema.prisma`, `server/prisma/migrations/**`
+**T2.2 Schema and first migration** · `done` · Depends on: T2.1 · Owns: `server/prisma/schema.prisma`, `server/prisma/migrations/**`
 - Read: 03-DATA_MODEL
 - Done when: the schema matches the data model doc, `prisma migrate dev --name init` succeeds, and the tables are visible in Prisma Studio.
 
-**T2.3 Seed script** · `todo` · Depends on: T2.2 · Owns: `server/prisma/seed.ts`
+**T2.3 Seed script** · `done` · Depends on: T2.2 · Owns: `server/prisma/seed.ts`
 - Done when: `npm run db:seed` creates 4 categories, about 24 products and the demo user (bcrypt hash), and is safe to run again (re-runnable).
 
 ## P3. Backend core and catalog API

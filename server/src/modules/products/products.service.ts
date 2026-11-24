@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client';
+import { env } from '../../config/env.js';
 import { notFoundError } from '../../lib/errors.js';
 import { prisma } from '../../lib/prisma.js';
 import type { CategoryDto } from '../categories/categories.service.js';
@@ -61,6 +62,15 @@ function buildOrderBy(sort: ListProductsQuery['sort']): Prisma.ProductOrderByWit
   }
 }
 
+function buildSearchFilter(search: string): Prisma.StringFilter {
+  // SQLite does not support Prisma's `mode: 'insensitive'` (ASCII is already case-insensitive);
+  // PostgreSQL requires it for case-insensitive matching.
+  const isPostgres = env.DATABASE_URL.startsWith('postgres');
+  return (
+    isPostgres ? { contains: search, mode: 'insensitive' } : { contains: search }
+  ) as Prisma.StringFilter;
+}
+
 /**
  * Lists active products matching optional search, category, and price filters with pagination.
  */
@@ -73,7 +83,7 @@ export async function listProducts(
     isActive: true,
     ...(search
       ? {
-          OR: [{ name: { contains: search } }, { description: { contains: search } }],
+          OR: [{ name: buildSearchFilter(search) }, { description: buildSearchFilter(search) }],
         }
       : {}),
     ...(category

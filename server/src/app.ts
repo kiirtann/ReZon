@@ -22,6 +22,12 @@ import { productsRouter } from './modules/products/products.routes.js';
 export function createApp() {
   const app = express();
 
+  // Behind a reverse proxy (Render, Railway, Fly) in production, trust the first hop
+  // so req.ip (rate limiter) and secure cookies work properly.
+  if (env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+  }
+
   app.use(helmet());
   app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
   app.use(cookieParser());

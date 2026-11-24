@@ -1,4 +1,7 @@
-const API_BASE_URL = '/api/v1';
+// In dev, VITE_API_URL is unset and Vite proxies /api/* to localhost:4000.
+// In production, set VITE_API_URL (e.g. https://api.shoplearn.onrender.com) if hosted on a separate origin.
+const API_ORIGIN = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '');
+const API_BASE_PATH = '/api/v1';
 
 export interface PaginationMeta {
   page: number;
@@ -47,11 +50,11 @@ export interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
 }
 
 function buildUrl(path: string): string {
-  if (path.startsWith(API_BASE_URL)) {
-    return path;
+  if (path.startsWith(API_BASE_PATH)) {
+    return `${API_ORIGIN}${path}`;
   }
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return `${API_BASE_URL}${normalizedPath}`;
+  return `${API_ORIGIN}${API_BASE_PATH}${normalizedPath}`;
 }
 
 async function parseJsonSafe(response: Response): Promise<unknown> {

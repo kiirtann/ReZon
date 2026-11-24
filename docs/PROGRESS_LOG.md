@@ -9,6 +9,17 @@
 > - Notes / follow-ups: <anything the next task should know>
 > ```
 
+## 2026-11-24 · P10 Production readiness (T10.1–T10.2) · Antigravity
+- Changed:
+  - **T10.1 (PostgreSQL)**: added `server/prisma/schema.postgres.prisma` (`provider = "postgresql"`), updated `server/src/modules/products/products.service.ts` to use `mode: 'insensitive'` when `DATABASE_URL` is Postgres (keeping SQLite dev/tests working).
+  - **T10.2 (Deploy configs)**: added `trust proxy` in `server/src/app.ts`, cross-origin `sameSite: 'none'` + `secure` cookies in prod in `server/src/modules/auth/auth.controller.ts`, `VITE_API_URL` support in `client/src/lib/apiClient.ts` + `client/.env.example`, `client/vercel.json`, `render.yaml`, and `docs/DEPLOYMENT.md`.
+- Verified:
+  - `npm run typecheck` (0 errors)
+  - `npm test` (server: 10 files, 54 tests passed; client: 17 files, 61 tests passed)
+  - `npm run lint` (0 errors, 0 warnings) & `npm run format:check` (passed)
+  - `npm run build` (passed)
+- Notes / follow-ups: All 11 phases (P0–P10) are complete! Follow `docs/DEPLOYMENT.md` when ready to push to GitHub, Neon/Supabase, Render, and Vercel.
+
 ## 2026-11-24 · P9 Quality & hardening (T9.1–T9.3) · Antigravity (parallel)
 - Changed:
   - **T9.2 (Server security)**: added `createRateLimiter` (`server/src/middleware/rateLimit.ts`) on `/api/v1/auth/login` and `/api/v1/auth/register` (`429 RATE_LIMITED`), added body payload limits in `server/src/app.ts` (`100kb` JSON, `1mb` webhook raw), and audited helmet, CORS, cookie flags, and Zod/pricing guards.

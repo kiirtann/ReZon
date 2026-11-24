@@ -1,0 +1,31 @@
+# Render Blueprint for the ShopLearn API (Node + Express + Prisma PostgreSQL)
+services:
+  - type: web
+    name: shoplearn-api
+    runtime: node
+    plan: free
+    buildCommand: >-
+      npm install &&
+      cp server/prisma/schema.postgres.prisma server/prisma/schema.prisma &&
+      npx --workspace=server prisma generate &&
+      npx --workspace=server prisma migrate deploy &&
+      npm run build -w server
+    startCommand: npm run start -w server
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: CURRENCY
+        value: inr

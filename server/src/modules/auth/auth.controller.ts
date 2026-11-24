@@ -8,10 +8,12 @@ import * as authService from './auth.service.js';
 const AUTH_COOKIE_NAME = 'token';
 
 function getAuthCookieOptions(): CookieOptions {
+  const isProd = env.NODE_ENV === 'production';
   return {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: env.NODE_ENV === 'production',
+    // Cross-origin deployments (e.g. Vercel frontend + Render API) require SameSite=None + Secure.
+    sameSite: isProd ? 'none' : 'lax',
+    secure: isProd,
     path: '/',
   };
 }

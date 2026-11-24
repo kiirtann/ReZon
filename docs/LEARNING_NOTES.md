@@ -35,9 +35,24 @@
 | Rate limiting (`429 RATE_LIMITED`) | Capping repeated requests per IP on `/auth/login` and `/auth/register` with a `Retry-After` header to slow brute-force attacks | P9 (T9.2) |
 | Payload size limits | Capping `express.json({ limit: '100kb' })` and `express.raw({ limit: '1mb' })` to prevent memory-exhaustion DoS | P9 (T9.2) |
 | Route-based code splitting | Using `React.lazy` + `Suspense` so visitors on `/` don't download checkout/order pages or Zod schemas upfront | P9 (T9.3) |
+| `trust proxy` | Telling Express to trust the hosting platform's reverse proxy `X-Forwarded-*` headers so `req.ip` and `secure` cookies work in production | P10 (T10.2) |
+| Cross-origin `SameSite=None` | Allowing `httpOnly` auth cookies to be sent when the React SPA (`vercel.app`) and Express API (`onrender.com`) live on different domains | P10 (T10.2) |
 
 ---
 <!-- New task notes go below this line, newest first -->
+
+## Phase 10 Summary: Production Readiness (T10.1–T10.2)
+
+### What we built & why
+1. **PostgreSQL Readiness (`server/prisma/schema.postgres.prisma`, `products.service.ts`)**:
+   - Prepared the PostgreSQL Prisma schema while keeping local SQLite dev & tests intact, and added `mode: 'insensitive'` search automatically when `DATABASE_URL` points to Postgres.
+2. **Deployment & Cross-Origin Config (`app.ts`, `auth.controller.ts`, `apiClient.ts`, `render.yaml`, `client/vercel.json`, `docs/DEPLOYMENT.md`)**:
+   - Enabled `trust proxy` in production, `SameSite=None; Secure` cookies for separate-origin hosting, `VITE_API_URL` in `apiClient.ts`, SPA rewrites for Vercel, and a Render Blueprint + step-by-step deployment guide.
+
+### Self-check questions
+1. Why does `auth.controller.ts` switch from `sameSite: 'lax'` in dev to `sameSite: 'none'` + `secure: true` in production?
+2. Why do we need `client/vercel.json` rewrites (`/(.*) -> /index.html`) for a React Router SPA?
+3. Why does `app.set('trust proxy', 1)` matter for our rate limiter in production?
 
 ## Phase 9 Summary: Quality & Hardening (T9.1–T9.3)
 

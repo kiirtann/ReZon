@@ -13,7 +13,7 @@ export function Footer() {
             to="/"
             className="text-base font-bold tracking-tight text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-sm"
           >
-            Re<span className="text-primary">Zone</span>
+            Re<span className="text-primary">Zon</span>
           </Link>
           <p className="mt-1 text-xs text-muted">
             A full-stack e-commerce learning project built with React, Express, Prisma, and Stripe.

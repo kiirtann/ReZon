@@ -14,7 +14,7 @@ function getInitials(name: string): string {
 }
 
 /**
- * Global site header with ReZone logo, product search,
+ * Global site header with ReZon logo, product search,
  * cart icon badge, and borderless profile dropdown.
  */
 export function Header() {
@@ -77,7 +77,7 @@ export function Header() {
             to="/"
             className="rounded-sm text-xl font-bold tracking-tight text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
-            Re<span className="text-primary">Zone</span>
+            Re<span className="text-primary">Zon</span>
           </Link>
 
           <form

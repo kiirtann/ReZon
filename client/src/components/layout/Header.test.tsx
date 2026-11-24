@@ -84,7 +84,7 @@ describe('Header', () => {
   it('shows default emoji profile icon for guests, no Menu button, and opens guest dropdown', () => {
     renderHeader({ user: null });
 
-    expect(screen.getByRole('link', { name: /Re\s*Zone/i })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: /Re\s*Zon/i })).toHaveAttribute('href', '/');
     expect(
       screen.queryByRole('button', { name: /toggle navigation menu/i }),
     ).not.toBeInTheDocument();

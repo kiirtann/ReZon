@@ -9,6 +9,18 @@
 > - Notes / follow-ups: <anything the next task should know>
 > ```
 
+## 2026-11-24 · P3 Backend core & catalog API (T3.1–T3.3) + T5.1 App shell · Antigravity (parallel)
+- Changed:
+  - **P3 (Backend)**: added `server/src/lib/errors.ts` (`AppError` + factories), `server/src/middleware/{errorHandler,notFound,validate,requestLogger}.ts`, updated `server/src/app.ts` (`helmet`, `cors`, `cookieParser`, `express.json`, `/api/v1` router, `notFound`, `errorHandler`), built `categories` (`GET /api/v1/categories`) and `products` (`GET /api/v1/products`, `GET /api/v1/products/:slug`), plus `server/vitest.config.ts` and `server/src/test/{globalSetup,db}.ts` isolating tests to `server/prisma/test.db`.
+  - **T5.1 (Frontend shell)**: added `client/src/lib/{apiClient,queryClient,formatMoney}.ts` + tests, `client/src/components/layout/{Container,Header,Footer,PageShell,index}.tsx`, `client/src/pages/NotFoundPage.tsx`, and `client/src/app/{providers,router,App}.tsx` with all 13 routes from `docs/05-UI_DESIGN.md`.
+- Verified:
+  - `npm run typecheck` (0 errors across client and server)
+  - `npm test` (server: 4 files, 16 tests passed; client: 7 files, 20 tests passed)
+  - `npm run lint` (0 errors) & `npm run format:check` (passed)
+  - `npm run build` (passed)
+  - Live `npm run dev` smoke test via Vite proxy (`/api/v1/categories` and `/api/v1/products?limit=2`)
+- Notes / follow-ups: P3 is ready for user review. Next up: **P4 (Authentication: T4.1 + T4.2)** and/or **T5.2–T5.4 (Frontend catalog pages)**.
+
 ## 2026-11-24 · P1 UI Design (T1.1–T1.4) + P2 Database (T2.1–T2.3) · Antigravity (parallel)
 - Changed:
   - **P1 (UI Design)**: finalized `docs/05-UI_DESIGN.md` (sitemap, flows, WCAG AA-checked tokens, component inventory), created `docs/design/wireframes.md`, updated `client/src/styles/index.css`, built 14 accessible UI primitives in `client/src/components/ui/*` + unit tests, and added `client/src/pages/StyleguidePage.tsx` at `/styleguide`.

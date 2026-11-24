@@ -30,7 +30,7 @@ built against the API contract with mocked data before the backend is done.
 | P0 | Monorepo, tooling, both apps start | npm workspaces, Vite, TS config, ESLint/Prettier | done |
 | P1 | Finished UI design: flows, tokens, wireframes, components | UX basics, design systems, accessibility | done |
 | P2 | Prisma schema, migration, seed | Relational modeling, migrations, ORMs | done |
-| P3 | Express skeleton, error handling, products and categories API | REST, middleware, validation, pagination, filtering | todo |
+| P3 | Express skeleton, error handling, products and categories API | REST, middleware, validation, pagination, filtering | done |
 | P4 | Register, login, logout, me, protected routes (API + UI) | Hashing, JWT, cookies, CORS, auth context | todo |
 | P5 | Layout, routing, home, product list and detail pages | React Router, TanStack Query, URL state, component design | todo |
 | P6 | Cart store, cart page, cart validation API | Client state, persistence, server-side validation | todo |
@@ -87,14 +87,14 @@ built against the API contract with mocked data before the backend is done.
 - Done when: `npm run db:seed` creates 4 categories, about 24 products and the demo user (bcrypt hash), and is safe to run again (re-runnable).
 
 ## P3. Backend core and catalog API
-**T3.1 App plumbing** · `todo` · Depends on: T0.2 · Owns: `server/src/middleware/**`, `server/src/lib/errors.ts`, `server/src/app.ts`
+**T3.1 App plumbing** · `done` · Depends on: T0.2 · Owns: `server/src/middleware/**`, `server/src/lib/errors.ts`, `server/src/app.ts`
 - Read: 04-API_CONTRACT (conventions)
 - Done when: `AppError`, `errorHandler`, `notFound`, `validate(schema)`, CORS (with credentials), cookie-parser, helmet and request logging are in place; the error format matches the contract.
 
-**T3.2 Categories API** · `todo` · Depends on: T3.1, T2.3 · Owns: `server/src/modules/categories/**`
+**T3.2 Categories API** · `done` · Depends on: T3.1, T2.3 · Owns: `server/src/modules/categories/**`
 - Done when: `GET /categories` works and has a test.
 
-**T3.3 Products API** · `todo` · Depends on: T3.1, T2.3 · Owns: `server/src/modules/products/**`
+**T3.3 Products API** · `done` · Depends on: T3.1, T2.3 · Owns: `server/src/modules/products/**`
 - Read: 04-API_CONTRACT (products), 03-DATA_MODEL
 - Done when: list (search, category, price range, sort, pagination, `meta`) and detail by slug work; invalid query returns 400; tests cover the filters.
 
@@ -109,7 +109,7 @@ built against the API contract with mocked data before the backend is done.
 - Done when: login and register forms validate, `useMe()` hook, header user menu, `<ProtectedRoute>` redirects to `/login?redirect=...`, logout works.
 
 ## P5. Frontend catalog
-**T5.1 App shell and routing** · `todo` · Depends on: T1.4 · Owns: `client/src/app/**`, `client/src/components/layout/**`, `client/src/lib/**`, `client/src/pages/NotFoundPage.tsx`
+**T5.1 App shell and routing** · `done` · Depends on: T1.4 · Owns: `client/src/app/**`, `client/src/components/layout/**`, `client/src/lib/**`, `client/src/pages/NotFoundPage.tsx`
 - Done when: router has every route (placeholders are fine), Header and Footer, `apiClient`, QueryClient provider, `formatMoney`.
 
 **T5.2 Product list page** · `todo` · Depends on: T5.1, T3.3 · Owns: `client/src/features/products/**`, `client/src/pages/ProductListPage.tsx`

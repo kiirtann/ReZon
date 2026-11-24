@@ -1,11 +1,14 @@
-import { HomePage } from '../pages/HomePage';
-import { StyleguidePage } from '../pages/StyleguidePage';
+import { RouterProvider } from 'react-router-dom';
+import { Providers } from './providers';
+import { router } from './router';
 
-// The root component. T5.1 replaces this with providers (TanStack Query) and React Router.
+/**
+ * Root application component wrapping React Router with global providers.
+ */
 export function App() {
-  if (typeof window !== 'undefined' && window.location.pathname === '/styleguide') {
-    return <StyleguidePage />;
-  }
-
-  return <HomePage />;
+  return (
+    <Providers>
+      <RouterProvider router={router} />
+    </Providers>
+  );
 }

@@ -17,9 +17,32 @@
 | ORM & migrations | Defining tables in `schema.prisma` and generating reproducible SQL migrations (`prisma migrate dev`) instead of hand-editing SQL | P2 (T2.2) |
 | Singleton on `globalThis` | Caching `PrismaClient` on `globalThis` in dev so `tsx watch` hot-reloads don't open duplicate database connections | P2 (T2.1) |
 | Idempotent seeding (`upsert`) | Writing seed scripts so running them twice updates existing records instead of crashing on unique constraints | P2 (T2.3) |
+| Centralized `errorHandler` | Express 4-argument middleware `(err, req, res, next)` registered last to turn `AppError`/`ZodError`/unexpected errors into a uniform JSON envelope without leaking stack traces | P3 (T3.1) |
+| Boundary validation (`validate`) | Parsing `body`/`query`/`params` with Zod in middleware and saving onto `req.validated` (avoiding Express 5's read-only `req.query` getter) | P3 (T3.1) |
+| Typed `apiClient` + smart retries | Centralizing `fetch` with `credentials: 'include'` and `ApiError`, and skipping TanStack Query retries on 4xx client errors | P5 (T5.1) |
 
 ---
 <!-- New task notes go below this line, newest first -->
+
+## Phase 3 & T5.1 Summary: Catalog API (T3.1–T3.3) & App Shell (T5.1)
+
+### What we built & why
+1. **Backend plumbing & Catalog API (`server/src/`)**:
+   - `lib/errors.ts` + `middleware/{errorHandler,notFound,validate,requestLogger}.ts` standardize error responses and Zod validation across every route.
+   - `modules/categories/` and `modules/products/` implement `GET /api/v1/categories`, `GET /api/v1/products` (search, category slug, price range, sort, pagination `meta`), and `GET /api/v1/products/:slug`.
+   - `vitest.config.ts` + `test/globalSetup.ts` isolate Supertest integration tests to `server/prisma/test.db` so `dev.db` is never altered.
+2. **Frontend shell & routing (`client/src/`)**:
+   - `lib/{apiClient,queryClient,formatMoney}.ts` handle cookie-authenticated JSON requests, smart query caching/retries, and `Intl.NumberFormat` currency display.
+   - `components/layout/{Header,Footer,PageShell,Container}.tsx` and `app/router.tsx` wire all 13 routes from `docs/05-UI_DESIGN.md` with placeholder views ready for `T4.2`, `T5.2`–`T5.4`, `T6.2`, `T7.3`, and `T8.2`.
+
+### Self-check questions
+1. Why must `errorHandler` be registered *after* all routes and `notFound` in `server/src/app.ts`?
+2. Why does `validate.ts` write to `req.validated` instead of reassigning `req.query` in Express 5?
+3. Why does `queryClient.ts` skip retries for 4xx `ApiError`s?
+
+### Optional hands-on exercise
+- Start `npm run dev` and test filtering products directly in your browser or curl:
+  `curl "http://localhost:5173/api/v1/products?category=electronics&sort=price_asc&limit=3"`
 
 ## Phase 1 & 2 Summary: UI Design (T1.1–T1.4) & Database (T2.1–T2.3)
 

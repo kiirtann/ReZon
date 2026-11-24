@@ -31,8 +31,8 @@ built against the API contract with mocked data before the backend is done.
 | P1 | Finished UI design: flows, tokens, wireframes, components | UX basics, design systems, accessibility | done |
 | P2 | Prisma schema, migration, seed | Relational modeling, migrations, ORMs | done |
 | P3 | Express skeleton, error handling, products and categories API | REST, middleware, validation, pagination, filtering | done |
-| P4 | Register, login, logout, me, protected routes (API + UI) | Hashing, JWT, cookies, CORS, auth context | todo |
-| P5 | Layout, routing, home, product list and detail pages | React Router, TanStack Query, URL state, component design | todo |
+| P4 | Register, login, logout, me, protected routes (API + UI) | Hashing, JWT, cookies, CORS, auth context | in_progress |
+| P5 | Layout, routing, home, product list and detail pages | React Router, TanStack Query, URL state, component design | done |
 | P6 | Cart store, cart page, cart validation API | Client state, persistence, server-side validation | todo |
 | P7 | Orders API, Stripe Checkout, webhook, checkout UI | Transactions, payment flows, webhooks, idempotency | todo |
 | P8 | Order history list and detail | Authorization (owning a resource), data display | todo |
@@ -101,7 +101,7 @@ built against the API contract with mocked data before the backend is done.
 > T3.2 and T3.3 can run **in parallel**.
 
 ## P4. Authentication
-**T4.1 Auth API** · `todo` · Depends on: T3.1, T2.2 · Owns: `server/src/modules/auth/**`, `server/src/lib/jwt.ts`, `server/src/lib/password.ts`, `server/src/middleware/requireAuth.ts`
+**T4.1 Auth API** · `done` · Depends on: T3.1, T2.2 · Owns: `server/src/modules/auth/**`, `server/src/lib/jwt.ts`, `server/src/lib/password.ts`, `server/src/middleware/requireAuth.ts`
 - Read: 04-API_CONTRACT (auth), 02-ARCHITECTURE (auth flow)
 - Done when: register, login, logout and me work with an httpOnly cookie; `requireAuth` sets `req.user`; tests cover duplicate email, wrong password and missing cookie.
 
@@ -112,13 +112,13 @@ built against the API contract with mocked data before the backend is done.
 **T5.1 App shell and routing** · `done` · Depends on: T1.4 · Owns: `client/src/app/**`, `client/src/components/layout/**`, `client/src/lib/**`, `client/src/pages/NotFoundPage.tsx`
 - Done when: router has every route (placeholders are fine), Header and Footer, `apiClient`, QueryClient provider, `formatMoney`.
 
-**T5.2 Product list page** · `todo` · Depends on: T5.1, T3.3 · Owns: `client/src/features/products/**`, `client/src/pages/ProductListPage.tsx`
+**T5.2 Product list page** · `done` · Depends on: T5.1, T3.3 · Owns: `client/src/features/products/**`, `client/src/pages/ProductListPage.tsx`
 - Done when: grid, filters, sort, search and pagination are all synced with the URL; skeleton, empty and error states work.
 
-**T5.3 Product detail page** · `todo` · Depends on: T5.2 · Owns: `client/src/pages/ProductDetailPage.tsx`
+**T5.3 Product detail page** · `done` · Depends on: T5.2 · Owns: `client/src/pages/ProductDetailPage.tsx`
 - Done when: image, info, stock status, quantity and an "Add to cart" button (wired up in P6); 404 state.
 
-**T5.4 Home page** · `todo` · Depends on: T5.2, T3.2 · Owns: `client/src/pages/HomePage.tsx`
+**T5.4 Home page** · `done` · Depends on: T5.2, T3.2 · Owns: `client/src/pages/HomePage.tsx`
 - Done when: hero, category tiles linking to filtered lists, featured products.
 
 ## P6. Cart

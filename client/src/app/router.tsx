@@ -4,6 +4,8 @@ import { PageShell } from '../components/layout/PageShell';
 import { Badge, Card, EmptyState } from '../components/ui';
 import { HomePage } from '../pages/HomePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
+import { ProductDetailPage } from '../pages/ProductDetailPage';
+import { ProductListPage } from '../pages/ProductListPage';
 import { StyleguidePage } from '../pages/StyleguidePage';
 
 interface PlaceholderPageProps {
@@ -42,26 +44,8 @@ export const routes: RouteObject[] = [
     element: <PageShell />,
     children: [
       { path: '/', element: <HomePage /> },
-      {
-        path: '/products',
-        element: (
-          <PlaceholderPage
-            title="Products"
-            taskId="T5.2"
-            description="Product catalog listing with search, category, price filters, and pagination."
-          />
-        ),
-      },
-      {
-        path: '/products/:slug',
-        element: (
-          <PlaceholderPage
-            title="Product Detail"
-            taskId="T5.3"
-            description="Product gallery, price, stock status, quantity stepper, and add-to-cart."
-          />
-        ),
-      },
+      { path: '/products', element: <ProductListPage /> },
+      { path: '/products/:slug', element: <ProductDetailPage /> },
       {
         path: '/cart',
         element: (

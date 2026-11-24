@@ -9,6 +9,17 @@
 > - Notes / follow-ups: <anything the next task should know>
 > ```
 
+## 2026-11-24 · T4.1 Auth API + P5 Frontend catalog (T5.2–T5.4) · Antigravity (parallel)
+- Changed:
+  - **T4.1 (Auth API)**: added `JWT_SECRET` / `JWT_EXPIRES_IN` to `server/src/config/env.ts` and `server/.env*`; created `server/src/lib/{password,jwt}.ts`, `server/src/middleware/requireAuth.ts`, and `server/src/modules/auth/{auth.schema,auth.service,auth.controller,auth.routes,auth.test}.ts`; mounted `/api/v1/auth` in `server/src/app.ts`.
+  - **P5 (Catalog UI)**: created `client/src/features/products/{types,api}.ts` (`useCategories`, `useProducts`, `useProduct`), `client/src/features/products/components/{ProductCard,ProductGrid,ProductFilters,SortSelect}.tsx` (+ tests), `client/src/pages/{ProductListPage,ProductDetailPage,HomePage}.tsx` (+ updated `HomePage.test.tsx`), and wired `/products` and `/products/:slug` in `client/src/app/router.tsx`.
+- Verified:
+  - `npm run typecheck` (0 errors across client and server)
+  - `npm test` (server: 5 files, 26 tests passed; client: 9 files, 26 tests passed)
+  - `npm run lint` (0 errors) & `npm run format:check` (passed)
+  - `npm run build` (passed)
+- Notes / follow-ups: P5 is complete! Next up: **T4.2 (Auth UI)** and **P6 (Cart: T6.1 + T6.2)** can run in parallel.
+
 ## 2026-11-24 · P3 Backend core & catalog API (T3.1–T3.3) + T5.1 App shell · Antigravity (parallel)
 - Changed:
   - **P3 (Backend)**: added `server/src/lib/errors.ts` (`AppError` + factories), `server/src/middleware/{errorHandler,notFound,validate,requestLogger}.ts`, updated `server/src/app.ts` (`helmet`, `cors`, `cookieParser`, `express.json`, `/api/v1` router, `notFound`, `errorHandler`), built `categories` (`GET /api/v1/categories`) and `products` (`GET /api/v1/products`, `GET /api/v1/products/:slug`), plus `server/vitest.config.ts` and `server/src/test/{globalSetup,db}.ts` isolating tests to `server/prisma/test.db`.

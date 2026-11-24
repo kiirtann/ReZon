@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 import { requestLogger } from './middleware/requestLogger.js';
+import { authRouter } from './modules/auth/auth.routes.js';
 import { categoriesRouter } from './modules/categories/categories.routes.js';
 import { healthRouter } from './modules/health/health.routes.js';
 import { productsRouter } from './modules/products/products.routes.js';
@@ -30,6 +31,7 @@ export function createApp() {
   // All API routes live under /api/v1 (versioned, see docs/04-API_CONTRACT.md).
   const api = express.Router();
   api.use('/health', healthRouter);
+  api.use('/auth', authRouter);
   api.use('/categories', categoriesRouter);
   api.use('/products', productsRouter);
   app.use('/api/v1', api);

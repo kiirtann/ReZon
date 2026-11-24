@@ -1,28 +1,97 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { apiClient } from '../lib/apiClient';
 import { HomePage } from './HomePage';
 
-describe('HomePage', () => {
-  afterEach(() => vi.unstubAllGlobals());
-
-  it('shows "API connected" when the health check succeeds', async () => {
-    // Replace the real fetch with a fake one, so the test does not need a running server.
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({ ok: true, json: async () => ({ data: { status: 'ok' } }) }),
-    );
-
-    render(<HomePage />);
-
-    expect(screen.getByRole('status')).toHaveTextContent('Checking API');
-    expect(await screen.findByText('API connected')).toBeInTheDocument();
+function renderHomePage() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+    },
   });
 
-  it('shows "API unreachable" when the request fails', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')));
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+}
 
-    render(<HomePage />);
+describe('HomePage', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
-    expect(await screen.findByText('API unreachable')).toBeInTheDocument();
+  it('renders hero, categories, and featured products on success', async () => {
+    vi.spyOn(apiClient, 'get').mockImplementation(async (path: string) => {
+      if (path === '/categories') {
+        return {
+          data: [
+            { id: 'cat-1', name: 'Electronics', slug: 'electronics' },
+            { id: 'cat-2', name: 'Books', slug: 'books' },
+          ],
+        };
+      }
+      if (path.startsWith('/products')) {
+        return {
+          data: [
+            {
+              id: 'prod-1',
+              name: 'Wireless Headphones',
+              slug: 'wireless-headphones',
+              priceCents: 249900,
+              imageUrl: 'https://example.com/headphones.jpg',
+              stock: 10,
+              category: { id: 'cat-1', name: 'Electronics', slug: 'electronics' },
+            },
+          ],
+          meta: { page: 1, limit: 8, total: 1, totalPages: 1 },
+        };
+      }
+      throw new Error(`Unexpected path: ${path}`);
+    });
+
+    renderHomePage();
+
+    expect(
+      screen.getByRole('heading', { name: /everyday essentials, thoughtfully curated/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /shop all products/i })).toHaveAttribute(
+      'href',
+      '/products',
+    );
+
+    expect(await screen.findByRole('link', { name: /electronics/i })).toHaveAttribute(
+      'href',
+      '/products?category=electronics',
+    );
+    expect(await screen.findByText('Wireless Headphones')).toBeInTheDocument();
+  });
+
+  it('renders empty state when there are no featured products', async () => {
+    vi.spyOn(apiClient, 'get').mockImplementation(async (path: string) => {
+      if (path === '/categories') return { data: [] };
+      return { data: [], meta: { page: 1, limit: 8, total: 0, totalPages: 0 } };
+    });
+
+    renderHomePage();
+
+    expect(await screen.findByText('No featured products yet')).toBeInTheDocument();
+  });
+
+  it('renders error alert with retry button when featured products fail to load', async () => {
+    vi.spyOn(apiClient, 'get').mockImplementation(async (path: string) => {
+      if (path === '/categories') return { data: [] };
+      throw new Error('Network error');
+    });
+
+    renderHomePage();
+
+    expect(await screen.findByText('Could not load featured products')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
   });
 });

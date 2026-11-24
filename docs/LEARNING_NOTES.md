@@ -20,9 +20,31 @@
 | Centralized `errorHandler` | Express 4-argument middleware `(err, req, res, next)` registered last to turn `AppError`/`ZodError`/unexpected errors into a uniform JSON envelope without leaking stack traces | P3 (T3.1) |
 | Boundary validation (`validate`) | Parsing `body`/`query`/`params` with Zod in middleware and saving onto `req.validated` (avoiding Express 5's read-only `req.query` getter) | P3 (T3.1) |
 | Typed `apiClient` + smart retries | Centralizing `fetch` with `credentials: 'include'` and `ApiError`, and skipping TanStack Query retries on 4xx client errors | P5 (T5.1) |
+| `httpOnly` JWT cookie + `SameSite=Lax` | Keeping auth tokens out of `localStorage` so XSS scripts cannot read them, while letting the browser send cookies automatically | P4 (T4.1) |
+| Account enumeration protection | Returning the exact same `401 Invalid email or password` whether the email is unknown or the password is wrong | P4 (T4.1) |
+| URL search params as filter state | Storing `search`, `category`, `minPrice`, `maxPrice`, `sort`, and `page` in `useSearchParams()` so links are shareable and Back works | P5 (T5.2) |
 
 ---
 <!-- New task notes go below this line, newest first -->
+
+## T4.1 & Phase 5 Summary: Auth API (T4.1) & Catalog UI (T5.2–T5.4)
+
+### What we built & why
+1. **Auth API (`server/src/modules/auth/`, `lib/password.ts`, `lib/jwt.ts`, `middleware/requireAuth.ts`)**:
+   - Passwords are hashed with `bcrypt` and never selected or returned in JSON.
+   - `POST /register` and `POST /login` sign a JWT and set it in an `httpOnly`, `sameSite: 'lax'` cookie (`token`). `requireAuth` verifies the cookie, loads `{ id, email, name }`, and attaches `req.user`.
+2. **Catalog UI (`client/src/features/products/`, `ProductListPage.tsx`, `ProductDetailPage.tsx`, `HomePage.tsx`)**:
+   - `useCategories`, `useProducts`, and `useProduct` fetch live API data via TanStack Query.
+   - `ProductListPage` syncs all filters, sort, search, and pagination with URL search params (`useSearchParams`), converting rupee inputs to minor units (paise) for the API.
+   - `HomePage` now renders a hero banner, category tiles linking to `/products?category=...`, and featured products.
+
+### Self-check questions
+1. Why do `POST /login` and `POST /register` set the JWT in an `httpOnly` cookie instead of returning it in JSON for `localStorage`?
+2. Why do wrong email and wrong password return the exact same `401` message?
+3. Why do we store product list filters in the URL (`?category=electronics&sort=price_asc`) instead of React `useState`?
+
+### Optional hands-on exercise
+- Run `npm run dev`, visit `http://localhost:5173`, click a category tile on the home page, and notice how the URL updates as you filter, sort, and paginate—then hit the browser Back button.
 
 ## Phase 3 & T5.1 Summary: Catalog API (T3.1–T3.3) & App Shell (T5.1)
 

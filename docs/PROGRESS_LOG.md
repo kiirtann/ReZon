@@ -9,6 +9,17 @@
 > - Notes / follow-ups: <anything the next task should know>
 > ```
 
+## 2026-11-24 · P7 Checkout & payments (T7.1–T7.3) · Antigravity (parallel)
+- Changed:
+  - **T7.1 & T7.2 (Backend)**: added `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` to `server/src/config/env.ts` and `server/.env`; created `server/src/lib/stripe.ts`, `server/src/modules/orders/*` (`POST /api/v1/orders`, `GET /api/v1/orders/:id`), and `server/src/modules/payments/*` (`POST /api/v1/webhooks/stripe`); mounted raw-body webhook before `express.json()` in `server/src/app.ts`.
+  - **T7.3 (Checkout UI)**: created `client/src/features/checkout/{types,schemas,api,checkout.test}.ts(x)`, `{AddressForm,OrderSummary}.tsx`, and `client/src/pages/{CheckoutPage,CheckoutSuccessPage,CheckoutSuccessPage.test,CheckoutCancelPage}.tsx`; wired `/checkout*` routes in `client/src/app/router.tsx`.
+- Verified:
+  - `npm run typecheck` (0 errors)
+  - `npm test` (server: 8 files, 41 tests passed; client: 14 files, 49 tests passed)
+  - `npm run lint` (0 errors) & `npm run format:check` (passed)
+  - `npm run build` (passed)
+- Notes / follow-ups: P7 is complete! Next up: **P8 (Order history: T8.1 + T8.2)**.
+
 ## 2026-11-24 · T4.2 Auth UI + P6 Cart (T6.1–T6.2) · Antigravity (parallel)
 - Changed:
   - **T6.1 (Cart API)**: added `CURRENCY` to `server/src/config/env.ts` and `server/.env*`; created `server/src/lib/pricing.ts` (`computeShippingCents`, `computeTotals`) and `server/src/modules/cart/*` (`POST /api/v1/cart/validate`), mounted in `server/src/app.ts`.

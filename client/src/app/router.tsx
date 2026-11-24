@@ -5,6 +5,9 @@ import { Badge, Card, EmptyState } from '../components/ui';
 import { GuestOnlyRoute } from '../features/auth/components/GuestOnlyRoute';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import { CartPage } from '../pages/CartPage';
+import { CheckoutCancelPage } from '../pages/CheckoutCancelPage';
+import { CheckoutPage } from '../pages/CheckoutPage';
+import { CheckoutSuccessPage } from '../pages/CheckoutSuccessPage';
 import { HomePage } from '../pages/HomePage';
 import { LoginPage } from '../pages/LoginPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -62,36 +65,9 @@ export const routes: RouteObject[] = [
       {
         element: <ProtectedRoute />,
         children: [
-          {
-            path: '/checkout',
-            element: (
-              <PlaceholderPage
-                title="Checkout"
-                taskId="T7.3"
-                description="Enter shipping address and proceed to Stripe Checkout."
-              />
-            ),
-          },
-          {
-            path: '/checkout/success',
-            element: (
-              <PlaceholderPage
-                title="Payment Processing"
-                taskId="T7.3"
-                description="Confirming your order payment status."
-              />
-            ),
-          },
-          {
-            path: '/checkout/cancel',
-            element: (
-              <PlaceholderPage
-                title="Checkout Cancelled"
-                taskId="T7.3"
-                description="Your payment was cancelled. Review your cart to try again."
-              />
-            ),
-          },
+          { path: '/checkout', element: <CheckoutPage /> },
+          { path: '/checkout/success', element: <CheckoutSuccessPage /> },
+          { path: '/checkout/cancel', element: <CheckoutCancelPage /> },
           {
             path: '/orders',
             element: (

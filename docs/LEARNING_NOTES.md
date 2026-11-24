@@ -26,9 +26,33 @@
 | Server-side price authority | Storing only `{ productId, quantity }` in Zustand/`localStorage` and computing all prices, shipping, and stock checks on the server | P6 (T6.1, T6.2) |
 | Batch loading (`WHERE id IN (...)`) | Fetching all cart products in one Prisma query instead of looping `findUnique` per item (avoids the N+1 query problem) | P6 (T6.1) |
 | Open-redirect prevention | Validating `?redirect=` starts with a single `/` (rejecting `//` or `https://`) before calling `navigate()` after login | P4 (T4.2) |
+| Price snapshots (`OrderItem`) | Copying `productName` and `unitPriceCents` onto `OrderItem` at checkout so past orders never change when catalog prices change | P7 (T7.1) |
+| Raw-body webhook verification | Mounting `POST /webhooks/stripe` with `express.raw()` before `express.json()` so Stripe's HMAC signature matches exact raw bytes | P7 (T7.2) |
+| Webhook idempotency | Checking `if (order.status === 'PAID') return;` inside `prisma.$transaction` so duplicate webhook deliveries don't double-decrement stock | P7 (T7.2) |
 
 ---
 <!-- New task notes go below this line, newest first -->
+
+## Phase 7 Summary: Checkout & Payments (T7.1–T7.3)
+
+### What we built & why
+1. **Orders API (`server/src/modules/orders/`)**:
+   - `POST /api/v1/orders` validates stock (`409 CONFLICT` on shortage), recalculates totals from DB prices (`computeTotals`), creates a `PENDING` `Order` + `OrderItem` snapshots inside `prisma.$transaction`, and creates a Stripe Checkout Session returning `checkoutUrl`.
+   - `GET /api/v1/orders/:id` enforces ownership (`403 FORBIDDEN` for non-owners) and parses `shippingAddress`.
+2. **Stripe Webhook (`server/src/lib/stripe.ts`, `server/src/modules/payments/`)**:
+   - Mounted with `express.raw({ type: 'application/json' })` before `express.json()` in `app.ts` so `constructWebhookEvent` verifies `Stripe-Signature`.
+   - `checkout.session.completed` atomically marks the order `PAID` and decrements `Product.stock` inside a transaction, safely ignoring duplicate deliveries.
+3. **Checkout UI (`client/src/features/checkout/`, `CheckoutPage.tsx`, `CheckoutSuccessPage.tsx`, `CheckoutCancelPage.tsx`)**:
+   - `CheckoutPage` validates the cart, collects shipping details, creates the order, and redirects externally with `window.location.assign(checkoutUrl)`.
+   - `CheckoutSuccessPage` polls `GET /orders/:id` every 2s while `PENDING` and clears the Zustand cart only after `status === 'PAID'`.
+
+### Self-check questions
+1. Why must `/api/v1/webhooks/stripe` be mounted before `app.use(express.json())`?
+2. Why shouldn't the client clear the Zustand cart as soon as `POST /orders` succeeds?
+3. What would happen if a webhook handler decremented `Product.stock` without checking `order.status === 'PAID'` first?
+
+### Optional hands-on exercise
+- To test real Stripe Checkout locally, set `STRIPE_SECRET_KEY=sk_test_...` in `server/.env`, run `stripe listen --forward-to localhost:4000/api/v1/webhooks/stripe` (which gives `STRIPE_WEBHOOK_SECRET`), and complete a checkout with test card `4242 4242 4242 4242`.
 
 ## T4.2 & Phase 6 Summary: Auth UI (T4.2) & Cart (T6.1–T6.2)
 

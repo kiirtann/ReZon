@@ -17,6 +17,8 @@ const envSchema = z
     DATABASE_URL: z.string().min(1).default('file:./dev.db'),
     JWT_SECRET: z.string().min(32).default(DEV_DEFAULT_JWT_SECRET),
     JWT_EXPIRES_IN: z.string().min(1).default('7d'),
+    STRIPE_SECRET_KEY: z.string().default(''),
+    STRIPE_WEBHOOK_SECRET: z.string().default('whsec_test_secret'),
     CURRENCY: z.string().trim().min(1).toLowerCase().default('inr'),
   })
   .superRefine((data, ctx) => {
@@ -25,6 +27,23 @@ const envSchema = z
         code: z.ZodIssueCode.custom,
         path: ['JWT_SECRET'],
         message: 'JWT_SECRET must be set to a strong secret in production',
+      });
+    }
+    if (data.NODE_ENV === 'production' && !data.STRIPE_SECRET_KEY) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['STRIPE_SECRET_KEY'],
+        message: 'STRIPE_SECRET_KEY must be set in production',
+      });
+    }
+    if (
+      data.NODE_ENV === 'production' &&
+      (!data.STRIPE_WEBHOOK_SECRET || data.STRIPE_WEBHOOK_SECRET === 'whsec_test_secret')
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['STRIPE_WEBHOOK_SECRET'],
+        message: 'STRIPE_WEBHOOK_SECRET must be set in production',
       });
     }
   });

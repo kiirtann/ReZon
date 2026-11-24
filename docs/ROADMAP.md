@@ -34,7 +34,7 @@ built against the API contract with mocked data before the backend is done.
 | P4 | Register, login, logout, me, protected routes (API + UI) | Hashing, JWT, cookies, CORS, auth context | done |
 | P5 | Layout, routing, home, product list and detail pages | React Router, TanStack Query, URL state, component design | done |
 | P6 | Cart store, cart page, cart validation API | Client state, persistence, server-side validation | done |
-| P7 | Orders API, Stripe Checkout, webhook, checkout UI | Transactions, payment flows, webhooks, idempotency | todo |
+| P7 | Orders API, Stripe Checkout, webhook, checkout UI | Transactions, payment flows, webhooks, idempotency | done |
 | P8 | Order history list and detail | Authorization (owning a resource), data display | todo |
 | P9 | Tests, security pass, accessibility, performance | Testing pyramid, OWASP basics, Lighthouse | todo |
 | P10 | Move to PostgreSQL, deploy | Production DB, env management, hosting | todo |
@@ -131,13 +131,13 @@ built against the API contract with mocked data before the backend is done.
 > T6.1 and T6.2 can run **in parallel** (both follow the contract).
 
 ## P7. Checkout and payments
-**T7.1 Orders create API** · `todo` · Depends on: T4.1, T6.1 · Owns: `server/src/modules/orders/**`
+**T7.1 Orders create API** · `done` · Depends on: T4.1, T6.1 · Owns: `server/src/modules/orders/**`
 - Done when: `POST /orders` validates stock, snapshots prices, creates a PENDING order and returns `checkoutUrl` (Stripe is called through `lib/stripe.ts`).
 
-**T7.2 Stripe integration and webhook** · `todo` · Depends on: T7.1 · Owns: `server/src/lib/stripe.ts`, `server/src/modules/payments/**`
+**T7.2 Stripe integration and webhook** · `done` · Depends on: T7.1 · Owns: `server/src/lib/stripe.ts`, `server/src/modules/payments/**`
 - Done when: Checkout Session is created; webhook verifies the signature, is idempotent, and marks the order PAID with stock decremented in a transaction; tested with the Stripe CLI.
 
-**T7.3 Checkout UI** · `todo` · Depends on: T6.2, T4.2 · Owns: `client/src/features/checkout/**`, `client/src/pages/Checkout*.tsx`
+**T7.3 Checkout UI** · `done` · Depends on: T6.2, T4.2 · Owns: `client/src/features/checkout/**`, `client/src/pages/Checkout*.tsx`
 - Done when: address form, order summary, redirect to Stripe; success page polls until PAID and clears the cart; cancel page.
 
 ## P8. Order history

@@ -1,7 +1,8 @@
 import type Stripe from 'stripe';
-import { validationError } from '../../lib/errors.js';
+import { env } from '../../config/env.js';
+import { forbiddenError, notFoundError, validationError } from '../../lib/errors.js';
 import { prisma } from '../../lib/prisma.js';
-import { constructWebhookEvent } from '../../lib/stripe.js';
+import { constructWebhookEvent, getStripeClient } from '../../lib/stripe.js';
 
 /**
  * Verifies a Stripe webhook payload and processes payment lifecycle events.
@@ -94,4 +95,48 @@ export async function handleStripeWebhook(
       // Unhandled event types are acknowledged with 200 so Stripe does not retry them.
       break;
   }
+}
+
+/**
+ * Dev-only helper: signs and dispatches a local Stripe webhook event so developers
+ * without a Stripe account can test the full checkout -> webhook -> PAID flow.
+ */
+export async function simulateStripeWebhook(
+  orderId: string,
+  action: 'complete' | 'expire',
+): Promise<void> {
+  if (env.NODE_ENV !== 'development' || Boolean(env.STRIPE_SECRET_KEY)) {
+    throw forbiddenError('Simulated checkout is only available in development without Stripe keys');
+  }
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { id: true, stripeSessionId: true },
+  });
+
+  if (!order) {
+    throw notFoundError('Order not found');
+  }
+
+  const eventType =
+    action === 'complete' ? 'checkout.session.completed' : 'checkout.session.expired';
+  const payload = JSON.stringify({
+    id: `evt_sim_${Date.now()}`,
+    object: 'event',
+    type: eventType,
+    data: {
+      object: {
+        id: order.stripeSessionId ?? `cs_sim_${order.id}`,
+        object: 'checkout.session',
+        metadata: { orderId: order.id },
+      },
+    },
+  });
+
+  const signature = getStripeClient().webhooks.generateTestHeaderString({
+    payload,
+    secret: env.STRIPE_WEBHOOK_SECRET,
+  });
+
+  await handleStripeWebhook(Buffer.from(payload, 'utf8'), signature);
 }

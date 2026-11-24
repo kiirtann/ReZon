@@ -224,4 +224,16 @@ describe('Payments Webhook API', () => {
       expect(headphones?.stock).toBe(5);
     });
   });
+
+  describe('POST /api/v1/webhooks/stripe/simulate', () => {
+    it('rejects simulated checkout outside development with 403 FORBIDDEN', async () => {
+      const res = await request(createApp())
+        .post('/api/v1/webhooks/stripe/simulate')
+        .set('Content-Type', 'application/json')
+        .send(JSON.stringify({ orderId: fixtures.orderId, action: 'complete' }));
+
+      expect(res.status).toBe(403);
+      expect(res.body.error.code).toBe('FORBIDDEN');
+    });
+  });
 });

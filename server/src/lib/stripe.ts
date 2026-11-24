@@ -59,6 +59,14 @@ export async function createCheckoutSession(
   }
 
   if (!env.STRIPE_SECRET_KEY) {
+    // In local development without Stripe keys, route to the built-in dev checkout simulator
+    // so the full order -> webhook -> PAID -> stock decrement flow can be tested offline.
+    if (env.NODE_ENV === 'development') {
+      return {
+        id: `cs_sim_${params.orderId}`,
+        url: `/checkout/simulate?orderId=${encodeURIComponent(params.orderId)}`,
+      };
+    }
     throw new AppError(500, 'INTERNAL_ERROR', 'Stripe secret key is not configured');
   }
 

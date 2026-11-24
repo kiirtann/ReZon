@@ -26,6 +26,9 @@ const CheckoutSuccessPage = lazy(() =>
 const CheckoutCancelPage = lazy(() =>
   import('../pages/CheckoutCancelPage').then((m) => ({ default: m.CheckoutCancelPage })),
 );
+const CheckoutSimulatePage = lazy(() =>
+  import('../pages/CheckoutSimulatePage').then((m) => ({ default: m.CheckoutSimulatePage })),
+);
 const OrderHistoryPage = lazy(() =>
   import('../pages/OrderHistoryPage').then((m) => ({ default: m.OrderHistoryPage })),
 );
@@ -79,6 +82,7 @@ export const routes: RouteObject[] = [
           { path: '/checkout', element: withSuspense(<CheckoutPage />) },
           { path: '/checkout/success', element: withSuspense(<CheckoutSuccessPage />) },
           { path: '/checkout/cancel', element: withSuspense(<CheckoutCancelPage />) },
+          { path: '/checkout/simulate', element: withSuspense(<CheckoutSimulatePage />) },
           { path: '/orders', element: withSuspense(<OrderHistoryPage />) },
           { path: '/orders/:id', element: withSuspense(<OrderDetailPage />) },
           { path: '/profile', element: withSuspense(<ProfilePage />) },

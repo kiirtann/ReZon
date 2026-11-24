@@ -21,7 +21,7 @@ export function HomePage() {
       <section className="rounded-lg border border-border bg-surface px-6 py-10 sm:px-10 sm:py-14">
         <div className="max-w-2xl space-y-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-            ShopLearn Storefront
+            ReZone Storefront
           </p>
           <h1 className="text-3xl font-bold tracking-tight text-text sm:text-4xl">
             Everyday essentials, thoughtfully curated.

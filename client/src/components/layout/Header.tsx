@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useLogout, useMe } from '../../features/auth/api';
 import { selectCartCount, useCartStore } from '../../features/cart/store';
@@ -10,21 +10,54 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     isActive ? 'text-primary' : 'text-muted hover:text-text'
   }`;
 
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 0 || !parts[0]) return 'U';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0] ?? ''}${parts[parts.length - 1]?.[0] ?? ''}`.toUpperCase();
+}
+
 /**
  * Global site header with brand logo, catalog navigation, product search,
- * live cart count badge, and authenticated user menu.
+ * live cart count badge, profile dropdown beside the menu toggle, and auth links.
  */
 export function Header() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
 
   const cartItemCount = useCartStore(selectCartCount);
   const { data: user } = useMe();
   const logout = useLogout();
 
+  useEffect(() => {
+    if (!profileOpen) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setProfileOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [profileOpen]);
+
   function handleLogout() {
     setMobileMenuOpen(false);
+    setProfileOpen(false);
     logout.mutate(undefined, {
       onSuccess: () => navigate('/'),
     });
@@ -34,6 +67,7 @@ export function Header() {
     event.preventDefault();
     const trimmed = searchQuery.trim();
     setMobileMenuOpen(false);
+    setProfileOpen(false);
     if (trimmed) {
       navigate(`/products?search=${encodeURIComponent(trimmed)}`);
     } else {
@@ -50,7 +84,7 @@ export function Header() {
               to="/"
               className="text-xl font-bold tracking-tight text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-sm"
             >
-              Shop<span className="text-primary">Learn</span>
+              Re<span className="text-primary">Zone</span>
             </Link>
 
             <nav aria-label="Primary" className="hidden items-center gap-4 md:flex">
@@ -129,6 +163,110 @@ export function Header() {
               )}
             </div>
 
+            {/* Profile dropdown beside the mobile Menu button (and accessible on all sizes) */}
+            <div ref={profileRef} className="relative">
+              <button
+                type="button"
+                aria-label="Profile menu"
+                aria-expanded={profileOpen}
+                aria-haspopup="menu"
+                onClick={() => {
+                  setProfileOpen((prev) => !prev);
+                  setMobileMenuOpen(false);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-sm font-medium text-text transition-colors hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                {user ? (
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-white">
+                    {getInitials(user.name)}
+                  </span>
+                ) : (
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-4 w-4 text-muted"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.118a7.5 7.5 0 0 1 15 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.5-1.632Z"
+                    />
+                  </svg>
+                )}
+                <span className="hidden sm:inline">{user ? 'Profile' : 'Account'}</span>
+              </button>
+
+              {profileOpen && (
+                <div
+                  role="menu"
+                  aria-label="Profile options"
+                  className="absolute right-0 z-40 mt-2 w-60 rounded-md border border-border bg-bg p-2 shadow-lg"
+                >
+                  {user ? (
+                    <div className="space-y-1">
+                      <div className="border-b border-border px-2.5 py-2">
+                        <p className="truncate text-sm font-semibold text-text">{user.name}</p>
+                        <p className="truncate text-xs text-muted">{user.email}</p>
+                      </div>
+                      <Link
+                        to="/orders"
+                        role="menuitem"
+                        onClick={() => setProfileOpen(false)}
+                        className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
+                      >
+                        Order History
+                      </Link>
+                      <Link
+                        to="/cart"
+                        role="menuitem"
+                        onClick={() => setProfileOpen(false)}
+                        className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
+                      >
+                        Shopping Cart ({cartItemCount})
+                      </Link>
+                      <div className="border-t border-border pt-1">
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={handleLogout}
+                          disabled={logout.isPending}
+                          className="w-full rounded-sm px-2.5 py-1.5 text-left text-sm font-medium text-danger hover:bg-danger-bg focus-visible:outline-2 focus-visible:outline-primary"
+                        >
+                          {logout.isPending ? 'Signing out…' : 'Sign out'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <div className="border-b border-border px-2.5 py-2">
+                        <p className="text-sm font-semibold text-text">Guest</p>
+                        <p className="text-xs text-muted">Sign in to checkout &amp; track orders</p>
+                      </div>
+                      <Link
+                        to="/login"
+                        role="menuitem"
+                        onClick={() => setProfileOpen(false)}
+                        className="block rounded-sm px-2.5 py-1.5 text-sm font-medium text-primary hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
+                      >
+                        Sign in
+                      </Link>
+                      <Link
+                        to="/register"
+                        role="menuitem"
+                        onClick={() => setProfileOpen(false)}
+                        className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
+                      >
+                        Create account
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             <Button
               variant="ghost"
               size="sm"
@@ -136,7 +274,10 @@ export function Header() {
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-nav"
               aria-label="Toggle navigation menu"
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              onClick={() => {
+                setMobileMenuOpen((prev) => !prev);
+                setProfileOpen(false);
+              }}
             >
               {mobileMenuOpen ? 'Close' : 'Menu'}
             </Button>

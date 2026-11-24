@@ -45,7 +45,7 @@ export function StyleguidePage() {
     <main className="mx-auto max-w-5xl space-y-12 px-4 py-10 sm:px-6">
       <header className="space-y-2 border-b border-border pb-6">
         <div className="flex items-center justify-between gap-4">
-          <h1 className="text-3xl font-bold tracking-tight">ShopLearn Styleguide</h1>
+          <h1 className="text-3xl font-bold tracking-tight">ReZone Styleguide</h1>
           <a href="/" className="text-sm font-medium text-primary hover:underline">
             ← Back to Home
           </a>

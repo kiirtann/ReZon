@@ -107,4 +107,34 @@ describe('Header', () => {
       expect(screen.getByTestId('location')).toHaveTextContent('/');
     });
   });
+
+  it('opens the Profile dropdown beside the menu button for guests and closes on Escape', () => {
+    renderHeader({ user: null });
+
+    expect(screen.getByRole('link', { name: /Re\s*Zone/i })).toHaveAttribute('href', '/');
+
+    fireEvent.click(screen.getByRole('button', { name: /profile menu/i }));
+    expect(screen.getByRole('menu', { name: /profile options/i })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /sign in/i })).toHaveAttribute('href', '/login');
+    expect(screen.getByRole('menuitem', { name: /create account/i })).toHaveAttribute(
+      'href',
+      '/register',
+    );
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('menu', { name: /profile options/i })).not.toBeInTheDocument();
+  });
+
+  it('shows user email and Order History inside the Profile dropdown when signed in', () => {
+    renderHeader({
+      user: { id: 'u1', email: 'ada@example.com', name: 'Ada Lovelace' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /profile menu/i }));
+    expect(screen.getByText('ada@example.com')).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /order history/i })).toHaveAttribute(
+      'href',
+      '/orders',
+    );
+  });
 });

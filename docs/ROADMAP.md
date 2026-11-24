@@ -27,7 +27,7 @@ built against the API contract with mocked data before the backend is done.
 
 | Phase | Goal | You will learn | Status |
 |---|---|---|---|
-| P0 | Monorepo, tooling, both apps start | npm workspaces, Vite, TS config, ESLint/Prettier | todo |
+| P0 | Monorepo, tooling, both apps start | npm workspaces, Vite, TS config, ESLint/Prettier | done |
 | P1 | Finished UI design: flows, tokens, wireframes, components | UX basics, design systems, accessibility | todo |
 | P2 | Prisma schema, migration, seed | Relational modeling, migrations, ORMs | todo |
 | P3 | Express skeleton, error handling, products and categories API | REST, middleware, validation, pagination, filtering | todo |
@@ -42,19 +42,19 @@ built against the API contract with mocked data before the backend is done.
 ---
 
 ## P0. Foundations
-**T0.1 Monorepo root setup** · `todo` · Depends on: – · Owns: `/package.json`, `/.gitignore`, `/.prettierrc`, `/.editorconfig`, `/README.md`
+**T0.1 Monorepo root setup** · `done` · Depends on: – · Owns: `/package.json`, `/.gitignore`, `/.prettierrc`, `/.prettierignore`, `/.editorconfig`, `/tsconfig.base.json`, `/eslint.config.js`, `/README.md`
 - Read: 02-ARCHITECTURE (repo layout)
 - Done when: npm workspaces `client` + `server` are declared; root scripts `dev`, `build`, `test`, `typecheck` exist (they may be stubs); `.gitignore` covers `node_modules`, `.env`, `*.db`, `dist`.
 
-**T0.2 Server scaffold** · `todo` · Depends on: T0.1 · Owns: `/server/**` (except `prisma/`)
+**T0.2 Server scaffold** · `done` · Depends on: T0.1 · Owns: `/server/**` (except `prisma/`)
 - Read: 02-ARCHITECTURE, 04-API_CONTRACT (health)
 - Done when: Express + TS (tsx for dev), `src/app.ts` + `src/server.ts`, `config/env.ts` with zod, `.env.example`; `GET /api/v1/health` returns `{data:{status:"ok"}}`; `npm run dev -w server` works.
 
-**T0.3 Client scaffold** · `todo` · Depends on: T0.1 · Owns: `/client/**`
+**T0.3 Client scaffold** · `done` · Depends on: T0.1 · Owns: `/client/**`
 - Read: 02-ARCHITECTURE, 05-UI_DESIGN (tokens)
 - Done when: Vite React TS app, Tailwind set up, proxy `/api` → `:4000`, folder skeleton created, placeholder home page renders.
 
-**T0.4 Run everything together** · `todo` · Depends on: T0.2, T0.3 · Owns: `/package.json` (scripts)
+**T0.4 Run everything together** · `done` · Depends on: T0.2, T0.3 · Owns: `/package.json` (scripts)
 - Done when: `npm run dev` at the root starts both apps (using `concurrently`); the client shows the health status it fetched from the API.
 
 > T0.2 and T0.3 can run **in parallel**.

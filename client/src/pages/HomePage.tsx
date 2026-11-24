@@ -16,24 +16,24 @@ export function HomePage() {
   const featuredProducts = featuredQuery.data?.data ?? [];
 
   return (
-    <Container className="space-y-12 py-8 sm:py-12">
+    <Container className="space-y-12 py-8 sm:py-12 lg:space-y-14 lg:py-14">
       {/* Hero section */}
-      <section className="rounded-lg border border-border bg-surface px-6 py-10 sm:px-10 sm:py-14">
-        <div className="max-w-2xl space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+      <section className="rounded-lg border border-border bg-surface px-6 py-12 sm:px-12 sm:py-16 lg:px-16 lg:py-20">
+        <div className="max-w-3xl space-y-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary sm:text-sm">
             ReZon Storefront
           </p>
-          <h1 className="text-3xl font-bold tracking-tight text-text sm:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-text sm:text-4xl lg:text-5xl">
             Everyday essentials, thoughtfully curated.
           </h1>
-          <p className="text-base text-muted sm:text-lg">
+          <p className="text-base text-muted sm:text-lg lg:text-xl">
             Browse electronics, home goods, apparel, and books—built step by step with clean
             full-stack architecture.
           </p>
           <div className="pt-2">
             <Link
               to="/products"
-              className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary-hover sm:text-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
               Shop all products
             </Link>

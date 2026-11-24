@@ -72,10 +72,10 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-bg/95 backdrop-blur">
       <Container>
-        <div className="flex flex-wrap items-center justify-between gap-3 py-3 md:flex-nowrap md:gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 py-3.5 md:flex-nowrap md:gap-8">
           <Link
             to="/"
-            className="rounded-sm text-xl font-bold tracking-tight text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="rounded-sm text-xl font-bold tracking-tight text-text sm:text-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             Re<span className="text-primary">Zon</span>
           </Link>
@@ -83,7 +83,7 @@ export function Header() {
           <form
             role="search"
             onSubmit={handleSearchSubmit}
-            className="order-last flex w-full items-center gap-2 md:order-none md:max-w-md md:flex-1"
+            className="order-last flex w-full items-center gap-2 md:order-none md:max-w-xl lg:max-w-2xl md:flex-1"
           >
             <label htmlFor="header-search" className="sr-only">
               Search products

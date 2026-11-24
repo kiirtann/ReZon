@@ -33,7 +33,7 @@ export function ProductCard({ product }: ProductCardProps) {
         />
       </Link>
 
-      <div className="flex flex-1 flex-col justify-between gap-3 p-4">
+      <div className="flex flex-1 flex-col justify-between gap-3 p-4 sm:p-5">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <Badge variant="neutral" size="sm">

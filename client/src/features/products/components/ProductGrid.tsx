@@ -30,7 +30,7 @@ export function ProductGrid({ products, loading = false, skeletonCount = 12 }: P
       <div
         aria-busy="true"
         aria-label="Loading products"
-        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-6"
       >
         {Array.from({ length: skeletonCount }, (_, index) => (
           <ProductCardSkeleton key={index} />
@@ -40,7 +40,7 @@ export function ProductGrid({ products, loading = false, skeletonCount = 12 }: P
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-6">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}

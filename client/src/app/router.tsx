@@ -2,10 +2,15 @@ import { createBrowserRouter, Link, type RouteObject } from 'react-router-dom';
 import { Container } from '../components/layout/Container';
 import { PageShell } from '../components/layout/PageShell';
 import { Badge, Card, EmptyState } from '../components/ui';
+import { GuestOnlyRoute } from '../features/auth/components/GuestOnlyRoute';
+import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
+import { CartPage } from '../pages/CartPage';
 import { HomePage } from '../pages/HomePage';
+import { LoginPage } from '../pages/LoginPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { ProductDetailPage } from '../pages/ProductDetailPage';
 import { ProductListPage } from '../pages/ProductListPage';
+import { RegisterPage } from '../pages/RegisterPage';
 import { StyleguidePage } from '../pages/StyleguidePage';
 
 interface PlaceholderPageProps {
@@ -46,85 +51,68 @@ export const routes: RouteObject[] = [
       { path: '/', element: <HomePage /> },
       { path: '/products', element: <ProductListPage /> },
       { path: '/products/:slug', element: <ProductDetailPage /> },
+      { path: '/cart', element: <CartPage /> },
       {
-        path: '/cart',
-        element: (
-          <PlaceholderPage
-            title="Shopping Cart"
-            taskId="T6.2"
-            description="Cart items validated against server prices and available stock."
-          />
-        ),
+        element: <GuestOnlyRoute />,
+        children: [
+          { path: '/login', element: <LoginPage /> },
+          { path: '/register', element: <RegisterPage /> },
+        ],
       },
       {
-        path: '/login',
-        element: (
-          <PlaceholderPage
-            title="Login"
-            taskId="T4.2"
-            description="Sign in to your ShopLearn account to checkout and view orders."
-          />
-        ),
-      },
-      {
-        path: '/register',
-        element: (
-          <PlaceholderPage
-            title="Create Account"
-            taskId="T4.2"
-            description="Register a new ShopLearn account."
-          />
-        ),
-      },
-      {
-        path: '/checkout',
-        element: (
-          <PlaceholderPage
-            title="Checkout"
-            taskId="T7.3"
-            description="Enter shipping address and proceed to Stripe Checkout."
-          />
-        ),
-      },
-      {
-        path: '/checkout/success',
-        element: (
-          <PlaceholderPage
-            title="Payment Processing"
-            taskId="T7.3"
-            description="Confirming your order payment status."
-          />
-        ),
-      },
-      {
-        path: '/checkout/cancel',
-        element: (
-          <PlaceholderPage
-            title="Checkout Cancelled"
-            taskId="T7.3"
-            description="Your payment was cancelled. Review your cart to try again."
-          />
-        ),
-      },
-      {
-        path: '/orders',
-        element: (
-          <PlaceholderPage
-            title="Order History"
-            taskId="T8.2"
-            description="View your past ShopLearn orders and their payment statuses."
-          />
-        ),
-      },
-      {
-        path: '/orders/:id',
-        element: (
-          <PlaceholderPage
-            title="Order Details"
-            taskId="T8.2"
-            description="Line items, shipping address, and totals for this order."
-          />
-        ),
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: '/checkout',
+            element: (
+              <PlaceholderPage
+                title="Checkout"
+                taskId="T7.3"
+                description="Enter shipping address and proceed to Stripe Checkout."
+              />
+            ),
+          },
+          {
+            path: '/checkout/success',
+            element: (
+              <PlaceholderPage
+                title="Payment Processing"
+                taskId="T7.3"
+                description="Confirming your order payment status."
+              />
+            ),
+          },
+          {
+            path: '/checkout/cancel',
+            element: (
+              <PlaceholderPage
+                title="Checkout Cancelled"
+                taskId="T7.3"
+                description="Your payment was cancelled. Review your cart to try again."
+              />
+            ),
+          },
+          {
+            path: '/orders',
+            element: (
+              <PlaceholderPage
+                title="Order History"
+                taskId="T8.2"
+                description="View your past ShopLearn orders and their payment statuses."
+              />
+            ),
+          },
+          {
+            path: '/orders/:id',
+            element: (
+              <PlaceholderPage
+                title="Order Details"
+                taskId="T8.2"
+                description="Line items, shipping address, and totals for this order."
+              />
+            ),
+          },
+        ],
       },
       { path: '/styleguide', element: <StyleguidePage /> },
       { path: '*', element: <NotFoundPage /> },

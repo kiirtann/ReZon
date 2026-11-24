@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useLogout, useMe } from '../../features/auth/api';
+import { selectCartCount, useCartStore } from '../../features/cart/store';
 import { Badge, Button, Input } from '../ui';
 import { Container } from './Container';
 
@@ -10,15 +12,23 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 /**
  * Global site header with brand logo, catalog navigation, product search,
- * cart link badge placeholder, and auth links placeholder.
+ * live cart count badge, and authenticated user menu.
  */
 export function Header() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Placeholder until T6.1 (cart store) and T4.2 (auth) are wired up.
-  const cartItemCount = 0;
+  const cartItemCount = useCartStore(selectCartCount);
+  const { data: user } = useMe();
+  const logout = useLogout();
+
+  function handleLogout() {
+    setMobileMenuOpen(false);
+    logout.mutate(undefined, {
+      onSuccess: () => navigate('/'),
+    });
+  }
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -47,6 +57,11 @@ export function Header() {
               <NavLink to="/products" className={navLinkClass}>
                 Products
               </NavLink>
+              {user && (
+                <NavLink to="/orders" className={navLinkClass}>
+                  Orders
+                </NavLink>
+              )}
             </nav>
           </div>
 
@@ -84,18 +99,34 @@ export function Header() {
             </Link>
 
             <div className="hidden items-center gap-2 md:flex">
-              <Link
-                to="/login"
-                className="rounded-md px-3 py-1.5 text-sm font-medium text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                Register
-              </Link>
+              {user ? (
+                <>
+                  <span className="px-2 text-sm font-medium text-text">{user.name}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    loading={logout.isPending}
+                  >
+                    Sign out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="rounded-md px-3 py-1.5 text-sm font-medium text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
             </div>
 
             <Button
@@ -125,16 +156,45 @@ export function Header() {
             >
               Products
             </NavLink>
-            <NavLink to="/login" className={navLinkClass} onClick={() => setMobileMenuOpen(false)}>
-              Login
-            </NavLink>
-            <NavLink
-              to="/register"
-              className={navLinkClass}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Register
-            </NavLink>
+            {user ? (
+              <>
+                <NavLink
+                  to="/orders"
+                  className={navLinkClass}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Orders
+                </NavLink>
+                <div className="flex items-center justify-between pt-1">
+                  <span className="px-1 text-sm font-medium text-text">{user.name}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    loading={logout.isPending}
+                  >
+                    Sign out
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <NavLink
+                  to="/login"
+                  className={navLinkClass}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  className={navLinkClass}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Register
+                </NavLink>
+              </>
+            )}
           </nav>
         )}
       </Container>

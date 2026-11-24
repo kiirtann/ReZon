@@ -23,9 +23,31 @@
 | `httpOnly` JWT cookie + `SameSite=Lax` | Keeping auth tokens out of `localStorage` so XSS scripts cannot read them, while letting the browser send cookies automatically | P4 (T4.1) |
 | Account enumeration protection | Returning the exact same `401 Invalid email or password` whether the email is unknown or the password is wrong | P4 (T4.1) |
 | URL search params as filter state | Storing `search`, `category`, `minPrice`, `maxPrice`, `sort`, and `page` in `useSearchParams()` so links are shareable and Back works | P5 (T5.2) |
+| Server-side price authority | Storing only `{ productId, quantity }` in Zustand/`localStorage` and computing all prices, shipping, and stock checks on the server | P6 (T6.1, T6.2) |
+| Batch loading (`WHERE id IN (...)`) | Fetching all cart products in one Prisma query instead of looping `findUnique` per item (avoids the N+1 query problem) | P6 (T6.1) |
+| Open-redirect prevention | Validating `?redirect=` starts with a single `/` (rejecting `//` or `https://`) before calling `navigate()` after login | P4 (T4.2) |
 
 ---
 <!-- New task notes go below this line, newest first -->
+
+## T4.2 & Phase 6 Summary: Auth UI (T4.2) & Cart (T6.1–T6.2)
+
+### What we built & why
+1. **Auth UI (`client/src/features/auth/`, `LoginPage.tsx`, `RegisterPage.tsx`)**:
+   - `useMe()` treats `401` as `null` (guest) with `retry: false`, while `useLogin` / `useRegister` update the `['auth', 'me']` cache immediately.
+   - `ProtectedRoute` redirects guests to `/login?redirect=...` (checked by `getSafeRedirect`), and `GuestOnlyRoute` keeps logged-in users out of `/login` and `/register`.
+2. **Cart API + Store + UI (`server/src/modules/cart/`, `lib/pricing.ts`, `client/src/features/cart/`, `CartPage.tsx`)**:
+   - Zustand `persist` saves only `{ productId, quantity }` in `localStorage`.
+   - `POST /api/v1/cart/validate` batch-loads products from SQLite, merges duplicate IDs, applies `computeTotals` (free shipping at ₹999+, else ₹49), and returns `issues` (`NOT_FOUND`, `INACTIVE`, `INSUFFICIENT_STOCK`).
+   - `Header.tsx` now displays the live cart badge and user menu (`name` + `Sign out`).
+
+### Self-check questions
+1. Why do we store only `{ productId, quantity }` in `localStorage` instead of caching `priceCents`?
+2. How does `validateCart` avoid an N+1 query problem when a cart has many products?
+3. Why does `useMe()` convert `401` into `null` instead of letting TanStack Query treat it as an error?
+
+### Optional hands-on exercise
+- Run `npm run dev`, add a product to your cart, open DevTools → Application → Local Storage (`shoplearn-cart`), inspect what's stored, then visit `/cart` and `/login` (`demo@shoplearn.dev` / `Password123!`).
 
 ## T4.1 & Phase 5 Summary: Auth API (T4.1) & Catalog UI (T5.2–T5.4)
 

@@ -9,6 +9,19 @@
 > - Notes / follow-ups: <anything the next task should know>
 > ```
 
+## 2026-11-24 · T4.2 Auth UI + P6 Cart (T6.1–T6.2) · Antigravity (parallel)
+- Changed:
+  - **T6.1 (Cart API)**: added `CURRENCY` to `server/src/config/env.ts` and `server/.env*`; created `server/src/lib/pricing.ts` (`computeShippingCents`, `computeTotals`) and `server/src/modules/cart/*` (`POST /api/v1/cart/validate`), mounted in `server/src/app.ts`.
+  - **T4.2 (Auth UI)**: created `client/src/features/auth/{types,schemas,redirect,formErrors,api}.ts`, `{ProtectedRoute,GuestOnlyRoute}.tsx`, and `client/src/pages/{LoginPage,RegisterPage}.tsx` (+ tests).
+  - **T6.2 (Cart UI)**: created `client/src/features/cart/{types,store,store.test,api}.ts`, `CartLineItem.tsx`, `CartSummary.tsx`, `client/src/pages/CartPage.tsx`, and wired `Add to cart` in `ProductDetailPage.tsx`.
+  - **Wiring**: updated `client/src/components/layout/Header.tsx` (live cart count badge + auth user menu) and `client/src/app/router.tsx` (`/cart`, `GuestOnlyRoute` for `/login` & `/register`, `ProtectedRoute` for `/checkout*` & `/orders*`).
+- Verified:
+  - `npm run typecheck` (0 errors)
+  - `npm test` (server: 6 files, 32 tests passed; client: 12 files, 41 tests passed)
+  - `npm run lint` (0 errors) & `npm run format:check` (passed)
+  - `npm run build` (passed)
+- Notes / follow-ups: P4 and P6 are complete! Next up: **P7 (Checkout and payments: T7.1, T7.2, T7.3)**.
+
 ## 2026-11-24 · T4.1 Auth API + P5 Frontend catalog (T5.2–T5.4) · Antigravity (parallel)
 - Changed:
   - **T4.1 (Auth API)**: added `JWT_SECRET` / `JWT_EXPIRES_IN` to `server/src/config/env.ts` and `server/.env*`; created `server/src/lib/{password,jwt}.ts`, `server/src/middleware/requireAuth.ts`, and `server/src/modules/auth/{auth.schema,auth.service,auth.controller,auth.routes,auth.test}.ts`; mounted `/api/v1/auth` in `server/src/app.ts`.

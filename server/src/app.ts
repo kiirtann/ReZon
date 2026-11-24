@@ -7,6 +7,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { authRouter } from './modules/auth/auth.routes.js';
+import { cartRouter } from './modules/cart/cart.routes.js';
 import { categoriesRouter } from './modules/categories/categories.routes.js';
 import { healthRouter } from './modules/health/health.routes.js';
 import { productsRouter } from './modules/products/products.routes.js';
@@ -34,6 +35,7 @@ export function createApp() {
   api.use('/auth', authRouter);
   api.use('/categories', categoriesRouter);
   api.use('/products', productsRouter);
+  api.use('/cart', cartRouter);
   app.use('/api/v1', api);
 
   app.use(notFound);

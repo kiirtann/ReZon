@@ -11,6 +11,7 @@ import {
   Skeleton,
 } from '../components/ui';
 import { useProduct } from '../features/products/api';
+import { useCartStore } from '../features/cart/store';
 import { ApiError } from '../lib/apiClient';
 
 /**
@@ -20,8 +21,11 @@ import { ApiError } from '../lib/apiClient';
 export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [quantity, setQuantity] = useState(1);
-  const [cartNotice, setCartNotice] = useState<string | null>(null);
+  const [addedFeedback, setAddedFeedback] = useState<{ quantity: number; name: string } | null>(
+    null,
+  );
 
+  const addItem = useCartStore((s) => s.addItem);
   const productQuery = useProduct(slug);
   const product = productQuery.data;
 
@@ -87,8 +91,8 @@ export function ProductDetailPage() {
 
   function handleAddToCart() {
     if (!product || isOutOfStock) return;
-    // Phase 6 (T6.1) will wire Zustand cart store here.
-    setCartNotice(`Cart is coming in Phase 6 — selected ${quantity} × "${product.name}".`);
+    addItem(product.id, quantity);
+    setAddedFeedback({ quantity, name: product.name });
   }
 
   return (
@@ -180,9 +184,20 @@ export function ProductDetailPage() {
               {isOutOfStock ? 'Out of stock' : 'Add to cart'}
             </Button>
 
-            {cartNotice && (
-              <Alert variant="info" title="Coming soon">
-                {cartNotice}
+            {addedFeedback && (
+              <Alert variant="success" title="Added to cart">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span>
+                    Added {addedFeedback.quantity} × &ldquo;{addedFeedback.name}&rdquo; to your
+                    cart.
+                  </span>
+                  <Link
+                    to="/cart"
+                    className="font-semibold underline underline-offset-2 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    View cart
+                  </Link>
+                </div>
               </Alert>
             )}
           </div>

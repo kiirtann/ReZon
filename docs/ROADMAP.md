@@ -31,9 +31,9 @@ built against the API contract with mocked data before the backend is done.
 | P1 | Finished UI design: flows, tokens, wireframes, components | UX basics, design systems, accessibility | done |
 | P2 | Prisma schema, migration, seed | Relational modeling, migrations, ORMs | done |
 | P3 | Express skeleton, error handling, products and categories API | REST, middleware, validation, pagination, filtering | done |
-| P4 | Register, login, logout, me, protected routes (API + UI) | Hashing, JWT, cookies, CORS, auth context | in_progress |
+| P4 | Register, login, logout, me, protected routes (API + UI) | Hashing, JWT, cookies, CORS, auth context | done |
 | P5 | Layout, routing, home, product list and detail pages | React Router, TanStack Query, URL state, component design | done |
-| P6 | Cart store, cart page, cart validation API | Client state, persistence, server-side validation | todo |
+| P6 | Cart store, cart page, cart validation API | Client state, persistence, server-side validation | done |
 | P7 | Orders API, Stripe Checkout, webhook, checkout UI | Transactions, payment flows, webhooks, idempotency | todo |
 | P8 | Order history list and detail | Authorization (owning a resource), data display | todo |
 | P9 | Tests, security pass, accessibility, performance | Testing pyramid, OWASP basics, Lighthouse | todo |
@@ -105,7 +105,7 @@ built against the API contract with mocked data before the backend is done.
 - Read: 04-API_CONTRACT (auth), 02-ARCHITECTURE (auth flow)
 - Done when: register, login, logout and me work with an httpOnly cookie; `requireAuth` sets `req.user`; tests cover duplicate email, wrong password and missing cookie.
 
-**T4.2 Auth UI** · `todo` · Depends on: T4.1 (or mocks), T1.4, T5.1 · Owns: `client/src/features/auth/**`, `client/src/pages/LoginPage.tsx`, `client/src/pages/RegisterPage.tsx`
+**T4.2 Auth UI** · `done` · Depends on: T4.1 (or mocks), T1.4, T5.1 · Owns: `client/src/features/auth/**`, `client/src/pages/LoginPage.tsx`, `client/src/pages/RegisterPage.tsx`
 - Done when: login and register forms validate, `useMe()` hook, header user menu, `<ProtectedRoute>` redirects to `/login?redirect=...`, logout works.
 
 ## P5. Frontend catalog
@@ -122,10 +122,10 @@ built against the API contract with mocked data before the backend is done.
 - Done when: hero, category tiles linking to filtered lists, featured products.
 
 ## P6. Cart
-**T6.1 Cart validate API** · `todo` · Depends on: T3.3 · Owns: `server/src/modules/cart/**`, `server/src/lib/pricing.ts`
+**T6.1 Cart validate API** · `done` · Depends on: T3.3 · Owns: `server/src/modules/cart/**`, `server/src/lib/pricing.ts`
 - Done when: `POST /cart/validate` returns lines, totals and issues; shipping rule lives in `pricing.ts`; tested.
 
-**T6.2 Cart store and UI** · `todo` · Depends on: T5.3 · Owns: `client/src/features/cart/**`, `client/src/pages/CartPage.tsx`
+**T6.2 Cart store and UI** · `done` · Depends on: T5.3 · Owns: `client/src/features/cart/**`, `client/src/pages/CartPage.tsx`
 - Done when: Zustand persisted store (add, remove, setQty, clear), header count, cart page shows validated prices and issues, and the store has tests.
 
 > T6.1 and T6.2 can run **in parallel** (both follow the contract).

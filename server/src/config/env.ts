@@ -17,6 +17,7 @@ const envSchema = z
     DATABASE_URL: z.string().min(1).default('file:./dev.db'),
     JWT_SECRET: z.string().min(32).default(DEV_DEFAULT_JWT_SECRET),
     JWT_EXPIRES_IN: z.string().min(1).default('7d'),
+    CURRENCY: z.string().trim().min(1).toLowerCase().default('inr'),
   })
   .superRefine((data, ctx) => {
     if (data.NODE_ENV === 'production' && data.JWT_SECRET === DEV_DEFAULT_JWT_SECRET) {

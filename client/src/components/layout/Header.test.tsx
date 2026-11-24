@@ -50,7 +50,7 @@ describe('Header', () => {
     vi.restoreAllMocks();
   });
 
-  it('displays the live cart count badge from the cart store', () => {
+  it('displays the cart icon link with live count badge from the cart store', () => {
     vi.spyOn(apiClient, 'get').mockRejectedValue(
       new ApiError(401, 'UNAUTHENTICATED', 'Not signed in'),
     );
@@ -79,41 +79,18 @@ describe('Header', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('/products?search=wireless%20mouse');
   });
 
-  it('shows Login and Register links for guest users', () => {
-    renderHeader({ user: null });
-
-    expect(screen.getByRole('link', { name: /^login$/i })).toHaveAttribute('href', '/login');
-    expect(screen.getByRole('link', { name: /^register$/i })).toHaveAttribute('href', '/register');
-    expect(screen.queryByRole('button', { name: /sign out/i })).not.toBeInTheDocument();
-  });
-
-  it('shows user name and Sign out button for authenticated users, and logs out on click', async () => {
-    const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce({ data: { ok: true } });
-
-    renderHeader({
-      initialEntry: '/orders',
-      user: { id: 'u1', email: 'ada@example.com', name: 'Ada Lovelace' },
-    });
-
-    expect(screen.getByText('Ada Lovelace')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /^orders$/i })).toHaveAttribute('href', '/orders');
-
-    fireEvent.click(screen.getByRole('button', { name: /sign out/i }));
-
-    await waitFor(() => {
-      expect(postSpy).toHaveBeenCalledWith('/auth/logout');
-    });
-    await waitFor(() => {
-      expect(screen.getByTestId('location')).toHaveTextContent('/');
-    });
-  });
-
-  it('opens the Profile dropdown beside the menu button for guests and closes on Escape', () => {
+  it('shows default emoji profile icon for guests, no Menu button, and opens guest dropdown', () => {
     renderHeader({ user: null });
 
     expect(screen.getByRole('link', { name: /Re\s*Zone/i })).toHaveAttribute('href', '/');
+    expect(
+      screen.queryByRole('button', { name: /toggle navigation menu/i }),
+    ).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /profile menu/i }));
+    const profileBtn = screen.getByRole('button', { name: /profile menu/i });
+    expect(profileBtn).toHaveTextContent('👤');
+
+    fireEvent.click(profileBtn);
     expect(screen.getByRole('menu', { name: /profile options/i })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: /sign in/i })).toHaveAttribute('href', '/login');
     expect(screen.getByRole('menuitem', { name: /create account/i })).toHaveAttribute(
@@ -125,16 +102,33 @@ describe('Header', () => {
     expect(screen.queryByRole('menu', { name: /profile options/i })).not.toBeInTheDocument();
   });
 
-  it('shows user email and Order History inside the Profile dropdown when signed in', () => {
+  it('shows profile circle + username and order actions in dropdown, and signs out on click', async () => {
+    const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce({ data: { ok: true } });
+
     renderHeader({
+      initialEntry: '/orders',
       user: { id: 'u1', email: 'ada@example.com', name: 'Ada Lovelace' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /profile menu/i }));
+    const profileBtn = screen.getByRole('button', { name: /profile menu/i });
+    expect(profileBtn).toHaveTextContent('AL');
+
+    fireEvent.click(profileBtn);
+    expect(screen.getByText('Ada Lovelace')).toBeInTheDocument();
     expect(screen.getByText('ada@example.com')).toBeInTheDocument();
-    expect(screen.getByRole('menuitem', { name: /order history/i })).toHaveAttribute(
+    expect(screen.getByRole('menuitem', { name: /my orders/i })).toHaveAttribute('href', '/orders');
+    expect(screen.getByRole('menuitem', { name: /checkout/i })).toHaveAttribute(
       'href',
-      '/orders',
+      '/checkout',
     );
+
+    fireEvent.click(screen.getByRole('menuitem', { name: /sign out/i }));
+
+    await waitFor(() => {
+      expect(postSpy).toHaveBeenCalledWith('/auth/logout');
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/');
+    });
   });
 });

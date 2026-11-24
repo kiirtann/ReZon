@@ -18,13 +18,12 @@ function getInitials(name: string): string {
 }
 
 /**
- * Global site header with brand logo, catalog navigation, product search,
- * live cart count badge, profile dropdown beside the menu toggle, and auth links.
+ * Global site header with ReZone logo, catalog navigation, product search,
+ * cart icon badge, and borderless profile dropdown.
  */
 export function Header() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +55,6 @@ export function Header() {
   }, [profileOpen]);
 
   function handleLogout() {
-    setMobileMenuOpen(false);
     setProfileOpen(false);
     logout.mutate(undefined, {
       onSuccess: () => navigate('/'),
@@ -66,7 +64,6 @@ export function Header() {
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = searchQuery.trim();
-    setMobileMenuOpen(false);
     setProfileOpen(false);
     if (trimmed) {
       navigate(`/products?search=${encodeURIComponent(trimmed)}`);
@@ -82,20 +79,15 @@ export function Header() {
           <div className="flex items-center gap-4">
             <Link
               to="/"
-              className="text-xl font-bold tracking-tight text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded-sm"
+              className="rounded-sm text-xl font-bold tracking-tight text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
               Re<span className="text-primary">Zone</span>
             </Link>
 
-            <nav aria-label="Primary" className="hidden items-center gap-4 md:flex">
+            <nav aria-label="Primary" className="flex items-center gap-4">
               <NavLink to="/products" className={navLinkClass}>
                 Products
               </NavLink>
-              {user && (
-                <NavLink to="/orders" className={navLinkClass}>
-                  Orders
-                </NavLink>
-              )}
             </nav>
           </div>
 
@@ -120,83 +112,54 @@ export function Header() {
             </Button>
           </form>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3">
+            {/* Cart icon logo + count badge */}
             <Link
               to="/cart"
               aria-label={`Cart, ${cartItemCount} items`}
-              className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="relative inline-flex items-center gap-1 rounded-full p-2 text-text transition-colors hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-              <span>Cart</span>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="h-5 w-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                />
+              </svg>
               <Badge variant="primary" size="sm">
                 {cartItemCount}
               </Badge>
             </Link>
 
-            <div className="hidden items-center gap-2 md:flex">
-              {user ? (
-                <>
-                  <span className="px-2 text-sm font-medium text-text">{user.name}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLogout}
-                    loading={logout.isPending}
-                  >
-                    Sign out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="rounded-md px-3 py-1.5 text-sm font-medium text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                  >
-                    Register
-                  </Link>
-                </>
-              )}
-            </div>
-
-            {/* Profile dropdown beside the mobile Menu button (and accessible on all sizes) */}
+            {/* Borderless circular profile icon + dropdown */}
             <div ref={profileRef} className="relative">
               <button
                 type="button"
                 aria-label="Profile menu"
                 aria-expanded={profileOpen}
                 aria-haspopup="menu"
-                onClick={() => {
-                  setProfileOpen((prev) => !prev);
-                  setMobileMenuOpen(false);
-                }}
-                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-sm font-medium text-text transition-colors hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                onClick={() => setProfileOpen((prev) => !prev)}
+                className="inline-flex items-center justify-center rounded-full p-0.5 transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 {user ? (
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-white">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
                     {getInitials(user.name)}
                   </span>
                 ) : (
-                  <svg
+                  <span
                     aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-surface text-base"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.118a7.5 7.5 0 0 1 15 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.5-1.632Z"
-                    />
-                  </svg>
+                    👤
+                  </span>
                 )}
-                <span className="hidden sm:inline">{user ? 'Profile' : 'Account'}</span>
               </button>
 
               {profileOpen && (
@@ -207,9 +170,14 @@ export function Header() {
                 >
                   {user ? (
                     <div className="space-y-1">
-                      <div className="border-b border-border px-2.5 py-2">
-                        <p className="truncate text-sm font-semibold text-text">{user.name}</p>
-                        <p className="truncate text-xs text-muted">{user.email}</p>
+                      <div className="flex items-center gap-2.5 border-b border-border px-2.5 py-2">
+                        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
+                          {getInitials(user.name)}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-text">{user.name}</p>
+                          <p className="truncate text-xs text-muted">{user.email}</p>
+                        </div>
                       </div>
                       <Link
                         to="/orders"
@@ -217,7 +185,15 @@ export function Header() {
                         onClick={() => setProfileOpen(false)}
                         className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
                       >
-                        Order History
+                        My Orders
+                      </Link>
+                      <Link
+                        to="/checkout"
+                        role="menuitem"
+                        onClick={() => setProfileOpen(false)}
+                        className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
+                      >
+                        Checkout
                       </Link>
                       <Link
                         to="/cart"
@@ -225,7 +201,7 @@ export function Header() {
                         onClick={() => setProfileOpen(false)}
                         className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
                       >
-                        Shopping Cart ({cartItemCount})
+                        My Cart ({cartItemCount})
                       </Link>
                       <div className="border-t border-border pt-1">
                         <button
@@ -241,9 +217,17 @@ export function Header() {
                     </div>
                   ) : (
                     <div className="space-y-1">
-                      <div className="border-b border-border px-2.5 py-2">
-                        <p className="text-sm font-semibold text-text">Guest</p>
-                        <p className="text-xs text-muted">Sign in to checkout &amp; track orders</p>
+                      <div className="flex items-center gap-2.5 border-b border-border px-2.5 py-2">
+                        <span
+                          aria-hidden="true"
+                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface text-base"
+                        >
+                          👤
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-text">Guest</p>
+                          <p className="text-xs text-muted">Sign in to view your orders</p>
+                        </div>
                       </div>
                       <Link
                         to="/login"
@@ -261,83 +245,21 @@ export function Header() {
                       >
                         Create account
                       </Link>
+                      <Link
+                        to="/cart"
+                        role="menuitem"
+                        onClick={() => setProfileOpen(false)}
+                        className="block rounded-sm px-2.5 py-1.5 text-sm text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
+                      >
+                        My Cart ({cartItemCount})
+                      </Link>
                     </div>
                   )}
                 </div>
               )}
             </div>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden"
-              aria-expanded={mobileMenuOpen}
-              aria-controls="mobile-nav"
-              aria-label="Toggle navigation menu"
-              onClick={() => {
-                setMobileMenuOpen((prev) => !prev);
-                setProfileOpen(false);
-              }}
-            >
-              {mobileMenuOpen ? 'Close' : 'Menu'}
-            </Button>
           </div>
         </div>
-
-        {mobileMenuOpen && (
-          <nav
-            id="mobile-nav"
-            aria-label="Mobile navigation"
-            className="flex flex-col gap-2 border-t border-border py-3 md:hidden"
-          >
-            <NavLink
-              to="/products"
-              className={navLinkClass}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Products
-            </NavLink>
-            {user ? (
-              <>
-                <NavLink
-                  to="/orders"
-                  className={navLinkClass}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Orders
-                </NavLink>
-                <div className="flex items-center justify-between pt-1">
-                  <span className="px-1 text-sm font-medium text-text">{user.name}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLogout}
-                    loading={logout.isPending}
-                  >
-                    Sign out
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <NavLink
-                  to="/login"
-                  className={navLinkClass}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Login
-                </NavLink>
-                <NavLink
-                  to="/register"
-                  className={navLinkClass}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Register
-                </NavLink>
-              </>
-            )}
-          </nav>
-        )}
       </Container>
     </header>
   );

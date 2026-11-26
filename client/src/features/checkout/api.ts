@@ -1,10 +1,20 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient, type ApiResponse } from '../../lib/apiClient';
-import type { CreateOrderInput, CreateOrderResponse, Order } from './types';
+import type {
+  CreateAddressInput,
+  CreateOrderInput,
+  CreateOrderResponse,
+  Order,
+  SavedAddress,
+} from './types';
 
 export const orderKeys = {
   all: ['orders'] as const,
   detail: (orderId: string) => ['orders', orderId] as const,
+};
+
+export const addressKeys = {
+  all: ['addresses'] as const,
 };
 
 const PENDING_POLL_INTERVAL_MS = 2000;
@@ -35,5 +45,58 @@ export function useOrder(orderId: string) {
     enabled: Boolean(orderId),
     refetchInterval: (query) =>
       query.state.data?.status === 'PENDING' ? PENDING_POLL_INTERVAL_MS : false,
+  });
+}
+
+export function useAddresses() {
+  return useQuery({
+    queryKey: addressKeys.all,
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<SavedAddress[]>>('/addresses');
+      return response.data;
+    },
+  });
+}
+
+export function useCreateAddress() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: CreateAddressInput) => {
+      const response = await apiClient.post<ApiResponse<SavedAddress>>('/addresses', input);
+      return response.data;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: addressKeys.all });
+    },
+  });
+}
+
+export function useSetDefaultAddress() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (addressId: string) => {
+      const response = await apiClient.patch<ApiResponse<SavedAddress>>(
+        `/addresses/${addressId}/default`,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: addressKeys.all });
+    },
+  });
+}
+
+export function useDeleteAddress() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (addressId: string) => {
+      await apiClient.delete<void>(`/addresses/${addressId}`);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: addressKeys.all });
+    },
   });
 }

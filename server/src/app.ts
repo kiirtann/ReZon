@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFound } from './middleware/notFound.js';
 import { requestLogger } from './middleware/requestLogger.js';
+import { addressesRouter } from './modules/addresses/addresses.routes.js';
 import { authRouter } from './modules/auth/auth.routes.js';
 import { cartRouter } from './modules/cart/cart.routes.js';
 import { categoriesRouter } from './modules/categories/categories.routes.js';
@@ -52,6 +53,7 @@ export function createApp() {
   api.use('/products', productsRouter);
   api.use('/cart', cartRouter);
   api.use('/orders', ordersRouter);
+  api.use('/addresses', addressesRouter);
   app.use('/api/v1', api);
 
   app.use(notFound);

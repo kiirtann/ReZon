@@ -42,3 +42,14 @@ export interface CreateOrderResponse {
   order: Order;
   checkoutUrl: string;
 }
+
+export interface SavedAddress extends ShippingAddress {
+  id: string;
+  label: string | null;
+  isDefault: boolean;
+}
+
+export interface CreateAddressInput extends ShippingAddress {
+  label?: string;
+  isDefault?: boolean;
+}

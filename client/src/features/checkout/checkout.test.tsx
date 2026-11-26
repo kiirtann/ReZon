@@ -6,7 +6,7 @@ import { ApiError, apiClient } from '../../lib/apiClient';
 import { CheckoutPage } from '../../pages/CheckoutPage';
 import type { CartValidationResult } from '../cart/types';
 import { useCartStore } from '../cart/store';
-import type { CreateOrderResponse } from './types';
+import type { CreateOrderResponse, SavedAddress } from './types';
 
 function makeValidationResult(overrides: Partial<CartValidationResult> = {}): CartValidationResult {
   return {
@@ -59,13 +59,15 @@ function fillValidAddressForm() {
   fireEvent.change(screen.getByLabelText(/city/i), { target: { value: 'Bengaluru' } });
   fireEvent.change(screen.getByLabelText(/state/i), { target: { value: 'Karnataka' } });
   fireEvent.change(screen.getByLabelText(/postal code/i), { target: { value: '560001' } });
-  fireEvent.change(screen.getByLabelText(/country/i), { target: { value: 'India' } });
-  fireEvent.change(screen.getByLabelText(/phone/i), { target: { value: '9876543210' } });
+  fireEvent.change(screen.getByLabelText(/^country\s*\*?$/i), { target: { value: 'India' } });
+  fireEvent.change(screen.getByLabelText(/country code/i), { target: { value: '+91' } });
+  fireEvent.change(screen.getByLabelText(/phone number/i), { target: { value: '9876543210' } });
 }
 
 describe('CheckoutPage', () => {
   beforeEach(() => {
     useCartStore.setState({ items: [] });
+    vi.spyOn(apiClient, 'get').mockResolvedValue({ data: [] });
   });
 
   afterEach(() => {
@@ -92,12 +94,32 @@ describe('CheckoutPage', () => {
 
     renderCheckoutPage();
 
-    expect(await screen.findByText(/cart issues must be resolved/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /review cart/i })).toHaveAttribute('href', '/cart');
+    expect(await screen.findByText(/cart needs attention before checkout/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /review your cart/i })).toHaveAttribute(
+      'href',
+      '/cart',
+    );
     expect(screen.getByRole('button', { name: /pay with stripe/i })).toBeDisabled();
   });
 
-  it('submits shipping address to POST /orders and redirects to Stripe checkoutUrl', async () => {
+  it('validates that phone number is exactly 10 digits', async () => {
+    useCartStore.setState({ items: [{ productId: 'prod_1', quantity: 1 }] });
+    const postSpy = vi.spyOn(apiClient, 'post').mockResolvedValueOnce({
+      data: makeValidationResult(),
+    });
+
+    renderCheckoutPage();
+    expect(await screen.findByText('Wireless Mouse')).toBeInTheDocument();
+
+    fillValidAddressForm();
+    fireEvent.change(screen.getByLabelText(/phone number/i), { target: { value: '12345' } });
+    fireEvent.click(screen.getByRole('button', { name: /pay with stripe/i }));
+
+    expect(await screen.findByText('Phone number must be exactly 10 digits')).toBeInTheDocument();
+    expect(postSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('saves new address, submits shipping address to POST /orders, and redirects', async () => {
     useCartStore.setState({ items: [{ productId: 'prod_1', quantity: 1 }] });
 
     const orderResponse: CreateOrderResponse = {
@@ -115,7 +137,7 @@ describe('CheckoutPage', () => {
           state: 'Karnataka',
           postalCode: '560001',
           country: 'India',
-          phone: '9876543210',
+          phone: '+91 9876543210',
         },
         items: [
           {
@@ -140,6 +162,7 @@ describe('CheckoutPage', () => {
     const postSpy = vi
       .spyOn(apiClient, 'post')
       .mockResolvedValueOnce({ data: makeValidationResult() })
+      .mockResolvedValueOnce({ data: { id: 'addr_1' } })
       .mockResolvedValueOnce({ data: orderResponse });
 
     renderCheckoutPage();
@@ -161,9 +184,43 @@ describe('CheckoutPage', () => {
         state: 'Karnataka',
         postalCode: '560001',
         country: 'India',
-        phone: '9876543210',
+        phone: '+91 9876543210',
       },
     });
+  });
+
+  it('lets user pick a saved default address or switch to adding a new address', async () => {
+    useCartStore.setState({ items: [{ productId: 'prod_1', quantity: 1 }] });
+
+    const savedAddresses: SavedAddress[] = [
+      {
+        id: 'addr_default',
+        label: 'Home',
+        fullName: 'Ada Lovelace',
+        line1: '123 MG Road',
+        city: 'Bengaluru',
+        state: 'Karnataka',
+        postalCode: '560001',
+        country: 'India',
+        phone: '+91 9876543210',
+        isDefault: true,
+      },
+    ];
+
+    vi.spyOn(apiClient, 'get').mockResolvedValue({ data: savedAddresses });
+    vi.spyOn(apiClient, 'post').mockResolvedValueOnce({ data: makeValidationResult() });
+
+    renderCheckoutPage();
+
+    expect(await screen.findByText('Default')).toBeInTheDocument();
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /deliver to this address & pay/i }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /\+ add new address/i }));
+    expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /use saved address/i })).toBeInTheDocument();
   });
 
   it('displays an Alert with link to /cart when POST /orders returns 409 conflict', async () => {
@@ -171,6 +228,7 @@ describe('CheckoutPage', () => {
 
     vi.spyOn(apiClient, 'post')
       .mockResolvedValueOnce({ data: makeValidationResult() })
+      .mockResolvedValueOnce({ data: { id: 'addr_1' } })
       .mockRejectedValueOnce(new ApiError(409, 'CONFLICT', 'Not enough stock for Wireless Mouse'));
 
     renderCheckoutPage();

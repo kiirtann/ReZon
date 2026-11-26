@@ -8,7 +8,10 @@ export const shippingAddressSchema = z.object({
   state: z.string().trim().min(1, 'State is required').max(100),
   postalCode: z.string().trim().min(1, 'Postal code is required').max(20),
   country: z.string().trim().min(1, 'Country is required').max(100),
-  phone: z.string().trim().min(5, 'Phone number is required').max(30),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^(\+\d{1,4}\s?)?\d{10}$/, 'Phone number must be 10 digits with optional country code'),
 });
 
 export const orderItemInputSchema = z.object({
